@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bin Temp</title>
+    <script src="{{ url_for('static', filename='Chart.js') }}"></script>
+
+
+  <!--import bootstrap -->
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+          <script src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
+
+	      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.6/umd/popper.min.js"></script>
+	          <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.js"></script>
+		      <!-- import google fonts lobster and open sans -->
+		          <link href="https://fonts.googleapis.com/css?family=Lobster|Open+Sans" rel="stylesheet">
+
+
+
+
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+  <script>
+
+  $( function() {
+	$("#header").load("http://bintemp.com/nav.html");
+	$("#footer").load("footer.html");
+					                      } );
+  </script>
+
+
+</head>
+<body>
+<div id="header"></div>
+<div class="container">
+    <h4 class="text-center">Bin Temperature Monitoring System API</h4>
+    <p class="text-center text-muted"></p>
+
+
+
+    <!--Temp Alarm={{ temp_alarm }}<br>-->
+
+    {%if temp_alarm == "true" %}
+    <div class="alert alert-danger text-center">Rapid Rise Detected.<br> At least 3&#8457 in one week at 32 or
+        below.<br> Check bin.
+        <form method="post" action="/python">
+            <input class="btn btn-secondary" type="submit" name="clear_alarm" value="Clear Alarm"><br>
+        </form>
+    </div>
+    {% endif %}
+
+
+    <div class="container">
+        <div class="row">
+            <div class="col-sm">
+                {% if current_temp > 32 %}
+                Current temp= {{ current_temp }} &#8457; <span
+                    class="alert-warning">The corn is above freezing</span><br>
+                {% else %}
+                Current temp= {{ current_temp }} &#8457;<br>
+                {% endif %}
+                {% if current_temp > 40 %}
+                <span class="alert-warning">Corn is above 40 &#8457;</span><br>
+                {% endif %}
+                {% if current_temp > 50 %}
+                <span class="alert-danger">Corn is above 50 &#8457;</span><br>
+                {% endif %}
+                {% if current_temp > 60 %}
+                <span class="alert-danger">Corn is above 60 &#8457;</span><br>
+                {% endif %}
+                {% if current_temp > 70 %}
+                <span class="alert-danger">Corn is above 70 &#8457;</span><br>
+                {% endif %}
+                {% if current_temp < 32 %}
+                <span class="alert-success">Corn is frozen.</span><br>
+                {% endif %}
+                Temp 1 week ago= {{ temp_week_ago }}<br>
+
+                {% if current_temp > temp_week_ago %}
+                Temp increase from 1 week ago = {{ temp_difference }}<br>
+                {% else %}
+                Temp decrease from 1 week ago = {{ temp_difference }}<br>
+                {% endif %}
+
+                Last Sample Time = {{ current_time }} <br>
+            </div>
+            <div class="col-sm">
+            </div>
+            <div class="col-sm">
+            </div>
+        </div>
+
+
+        <!--Number of Data Points= {{ rows }}<br>-->
+    </div>
+
+
+
+    <div class="container">
+        <div class="row">
+<!--begin chart-->
+        <div class="chart-container" style="position: relative; height:70vh; width:90vw">
+            <canvas id="myChart" width="400" height="400"></canvas>
+            <script>
+var ctx = document.getElementById('myChart').getContext('2d');
+var myChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+
+        labels: [{% for date in dates %}'{{ date }}',{% endfor %}] ,
+
+        datasets: [
+        {
+            label: 'Air Temp',
+            fill: false,
+            data: [{% for temp in temps %}{{ temp }},{% endfor %}],
+    	    backgroundColor: 'green',
+		    borderWidth: 3,
+		    borderColor: "green"
+        },
+        {
+            label: 'Sensor 1',
+            fill: false,
+            data: [{% for sense1 in sensor1 %}{{ sense1 }},{% endfor %}],
+    	    backgroundColor: 'orange',
+		    borderWidth: 3,
+		    borderColor: "orange"
+        },
+                {
+            label: 'Sensor 2',
+            fill: false,
+            data: [{% for sense2 in sensor2 %}{{ sense2 }},{% endfor %}],
+    	    backgroundColor: 'red',
+		    borderWidth: 3,
+		    borderColor: "red"
+        },
+                {
+            label: 'Soil Temp',
+            fill: false,
+            data: [{% for soil in soiltemp %}{{ soil }},{% endfor %}],
+    	    backgroundColor: '#533029',
+		    borderWidth: 3,
+		    borderColor: "#533029"
+        }]
+    },
+		options: {
+        scales: {
+            yAxes: [{
+                    ticks: {
+                    beginAtZero: false
+                }
+            }]
+        }
+    }
+});
+
+            </script>
+        </div>
+    <!--end chart-->
+            <div class="col-sm">
+            </div>
+        </div>
+    </div>
+
+
+
+
+</div>
+
+</body>
+</html>
