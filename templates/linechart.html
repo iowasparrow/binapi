@@ -74,7 +74,7 @@
                 <span class="alert-danger">Corn is above 70 &#8457;</span><br>
                 {% endif %}
                 {% if current_temp < 32 %}
-                <span class="alert-success">Corn is frozen.</span><br>
+                <span class="alert-success">Grain is frozen.</span><br>
                 {% endif %}
                 Temp 1 week ago= {{ temp_week_ago }}<br>
 
@@ -113,7 +113,7 @@ var myChart = new Chart(ctx, {
 
         datasets: [
         {
-            label: 'Air Temp',
+            label: 'Temp',
             fill: false,
             data: [{% for temp in temps %}{{ temp }},{% endfor %}],
     	    backgroundColor: 'green',
