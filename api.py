@@ -28,7 +28,7 @@ def get_all(siteid):  # This returns all entries in the database into a dict and
     dates = []
     temps = []
     # siteids = []
-    soiltemp = []
+    soiltemps = []
     sensor1 = []
     sensor2 = []
     # sensor3 = []
@@ -39,7 +39,7 @@ def get_all(siteid):  # This returns all entries in the database into a dict and
         dates.append(row[0])
         temps.append(row[1])
         #siteids.append(row[2])
-        soiltemp.append(row[3])
+        soiltemps.append(row[3])
         sensor1.append(row[4])
         sensor2.append(row[5])
         # sensor3append(row[6])
@@ -47,11 +47,11 @@ def get_all(siteid):  # This returns all entries in the database into a dict and
         # sensor5.append(row[8])
         # sensor6.append(row[9])
 
-        dict[row[0]] = {'date': row[0], 'temp': row[1], 'soiltemp':row[3] ,'sensor1': row[4], 'sensor2': row[5]}
+        dict[row[0]] = {'date': row[0], 'temp': row[1], 'soiltemps':row[3] ,'sensor1': row[4], 'sensor2': row[5]}
 
     conn.close()
     # print(dict)
-    return dates, temps, soiltemp, sensor1, sensor2
+    return dates, temps, soiltemps, sensor1, sensor2
     #return jsonify({'data': dict})
 
 
@@ -81,25 +81,37 @@ def get_current_data():  # get current values for display on web page
     curs = conn.cursor()
     current_time = []
     current_temp = []
+    current_soiltemp = []
     for row in curs.execute("SELECT * FROM tbl_data ORDER BY timestamp DESC LIMIT 1"):
         current_time = str(row[0])
         current_temp = row[1]
+        current_soiltemp = row[3]
     conn.close()
     temp_difference, temp_week_ago = check_rapid_rise(current_temp)
-    return current_time, current_temp, temp_difference, temp_week_ago
+    return current_time, current_temp, temp_difference, temp_week_ago, current_soiltemp
 
 
 @app.route('/linechart')
 def linechart():
     # here we want to get the value of user (i.e. ?user=some-value)
     siteid = request.args.get('siteid')
-
     #  print(dict)
-
     # return jsonify({'data': dict})
-    current_time, current_temp, temp_difference, temp_week_ago = get_current_data()
-    dates, temps, soiltemp, sensor1, sensor2 = get_all(siteid)
-    return render_template('linechart.html', temp_week_ago=temp_week_ago, temp_difference=temp_difference,temps=temps, dates=dates, soiltemp=soiltemp ,sensor1=sensor1,sensor2=sensor2, current_time=current_time, current_temp=current_temp)
+    current_time, current_temp, temp_difference, current_soiltemp, temp_week_ago = get_current_data()
+    dates, temps, soiltemps, sensor1, sensor2 = get_all(siteid)
+    return render_template('linechart.html', temp_week_ago=temp_week_ago, temp_difference=temp_difference,temps=temps, dates=dates, soiltemps=soiltemps ,sensor1=sensor1,sensor2=sensor2, current_time=current_time, current_temp=current_temp)
+
+
+@app.route('/dashboard')
+def dashboard():
+    # here we want to get the value of user (i.e. ?user=some-value)
+    siteid = request.args.get('siteid')
+    #  print(dict)
+    # return jsonify({'data': dict})
+    current_time, current_temp, temp_difference, temp_week_ago, current_soiltemp = get_current_data()
+    dates, temps, soiltemps, sensor1, sensor2 = get_all(siteid)
+    return render_template('dashboard.html', temp_week_ago=temp_week_ago, temp_difference=temp_difference,temps=temps, dates=dates, soiltemps=soiltemps ,sensor1=sensor1,sensor2=sensor2, current_time=current_time, current_temp=current_temp, current_soiltemp=current_soiltemp)
+
 
 
 @app.route('/todo/api/v1.0/tasks/<int:task_id>', methods=['GET'])

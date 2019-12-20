@@ -1,4 +1,3 @@
-#!/var/www/html/binweb/binapi/.venv/bin/python
 import sys
 import logging
 logging.basicConfig(stream=sys.stderr)

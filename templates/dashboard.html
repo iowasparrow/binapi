@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head runat="server">
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="Grain bin temperature monitoring sytem">
+  <meta name="keywords" content="grain, bin, temperature, temp, monitoring, sytem, proble, controller">
+  <meta name="author" content="Grant Siebrecht">
+  <meta name="google-site-verification" content="utJDX4OPa_MoU_38meeYScgCTluaJhdUxcDt-XttXcQ" />
+  <title>Grain Bin Temperature Monitoring System</title>
+
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.css') }}">
+    <script src="{{ url_for('static', filename='Chart.js') }}"></script>
+    <script src="{{ url_for('static', filename='jquery-3.4.1.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
+    <script src="{{ url_for('static', filename='popper.min.js') }}"></script>
+    <!--zoom plugin-->
+    <script src="{{ url_for('static', filename='chartzoom/hammerjs2.0.8') }}"></script>
+    <script src="{{ url_for('static', filename='chartzoom/chartjs-plugin-zoom0.7.4') }}"></script>
+    <!--end zoom plugin-->
+
+
+
+
+  <script>
+    $(function() {
+      $("#header").load("http://bintemp.com/nav.html");
+      $("#footer").load("footer.html");
+    });
+  </script>
+
+
+
+
+  <style>
+    body,
+    html {
+      height: 100%;
+    }
+
+    .bg {
+      /* The image used */
+      background-image: url("./images/bg.png");
+
+      /* Full height */
+      height: 45%;
+
+      /* Center and scale the image nicely */
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+    }
+
+</style>
+
+
+</head>
+
+<body>
+
+  <div id="header"></div>
+  <!--  <div class="bg"></div>-->
+  <form id="form1" runat="server">
+
+
+
+    <br>
+    <center>
+      <h3>Sensor Dashboard</h3><small><span class="text-muted">View any sensor from any smartphone or computer using IoT technology.</span></small>
+    </center>
+
+    <!--<div class="container-fluid" style="background:darkgrey;"><p><h3 style="text-align:center">MM/DD/YYYY</p></h3></div>-->
+
+    <br>
+
+    <div class="container">
+
+
+
+      <div class="row">
+
+        <div class="col-sm-4">
+
+
+          <div class="card border-dark mb-3">
+		  <div class="card-header">Air Temp:  {{ current_temp }}</div>
+            <div class="card-body text-dark">
+              <p class="card-text"><!--begin chart-->
+<div class="chart-container">
+
+<canvas id="myChart" height="300"></canvas>
+            <script>
+var ctx = document.getElementById('myChart').getContext('2d');
+var myChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+
+        labels: [{% for date in dates %}'{{ date }}',{% endfor %}] ,
+
+        datasets: [
+        {
+            label: 'Air Temp',
+            fill: false,
+            data: [{% for temp in temps %}{{ temp }},{% endfor %}],
+            backgroundColor: 'green',
+                    borderColor: "green"
+        }
+        ]
+    },
+                options: {
+		responsive: true,
+        		scales: {
+            			yAxes: [{
+                    			ticks: {
+                    			beginAtZero: false
+                			}
+            			}],
+				xAxes:[{display: false
+				}]
+       				},
+
+
+       plugins: {
+            zoom: {
+                // Container for pan options
+                pan: {
+                    // Boolean to enable panning
+                    enabled: true,
+
+                    // Panning directions. Remove the appropriate direction to disable
+                    // Eg. 'y' would only allow panning in the y direction
+                    mode: 'xy'
+                },
+
+                // Container for zoom options
+                zoom: {
+                    // Boolean to enable zooming
+                    enabled: true,
+
+                    // Zooming directions. Remove the appropriate direction to disable
+                    // Eg. 'y' would only allow zooming in the y direction
+                    mode: 'xy',
+                }
+            }
+        }
+
+
+    }
+});
+
+            </script>
+        </div>
+    <!--end chart--></p>
+            </div>
+          </div>
+
+
+</div>
+
+        <div class="col-sm-4">
+
+
+          <div class="card border-dark mb-3">
+		  <div class="card-header">Soil Temp: {{ current_soiltemp }}</div>
+            <div class="card-body text-dark">
+              <p class="card-text"><p class="card-text"><!--begin chart-->
+<div class="chart-container">
+
+<canvas id="myChart2" height="300"></canvas>
+            <script>
+var ctx = document.getElementById('myChart2').getContext('2d');
+var myChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+
+        labels: [{% for date in dates %}'{{ date }}',{% endfor %}] ,
+
+        datasets: [
+        {
+	    label: 'Soil Temp',
+            fill: false,
+            data: [{% for soil in soiltemps %}{{ soil }},{% endfor %}],
+            backgroundColor: 'orange',
+            borderColor: "orange"
+        }
+        ]
+    },
+                options: {
+                        legend:{
+                                display: true},
+                responsive: true,
+                        scales: {
+                                yAxes: [{
+                                        ticks: {
+                                        beginAtZero: true
+                                        }
+                                }],
+                                xAxes:[{display: false
+                                }]
+                                },
+
+
+       plugins: {
+            zoom: {
+                // Container for pan options
+                pan: {
+                    // Boolean to enable panning
+                    enabled: true,
+
+                    // Panning directions. Remove the appropriate direction to disable
+                    // Eg. 'y' would only allow panning in the y direction
+                    mode: 'xy'
+                },
+
+                // Container for zoom options
+                zoom: {
+                    // Boolean to enable zooming
+                    enabled: true,
+
+                    // Zooming directions. Remove the appropriate direction to disable
+                    // Eg. 'y' would only allow zooming in the y direction
+                    mode: 'xy',
+                }
+            }
+        }
+
+
+    }
+});
+
+            </script>
+        </div>
+    <!--end chart--></p>
+            </div>
+          </div>
+
+
+</div>
+
+
+        <div class="col-sm-4">
+
+
+          <div class="card border-dark mb-3">
+            <div class="card-header">Dryer Temp: 134</div>
+            <div class="card-body text-dark">
+              <p class="card-text">
+
+                <canvas id="dryer" height="340"></canvas>
+                <script>
+                var ctx = document.getElementById('dryer');
+                var dryer = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Dryer'],
+                        datasets: [{
+                            label: 'Temperature',
+                            data: [134],
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.2)',
+                                'rgba(54, 162, 235, 0.2)',
+                                'rgba(255, 206, 86, 0.2)',
+                                'rgba(75, 192, 192, 0.2)',
+                                'rgba(153, 102, 255, 0.2)',
+                                'rgba(255, 159, 64, 0.2)'
+                            ],
+                            borderColor: [
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 206, 86, 1)',
+                                'rgba(75, 192, 192, 1)',
+                                'rgba(153, 102, 255, 1)',
+                                'rgba(255, 159, 64, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: false
+                                }
+                            }]
+                        }
+                    }
+                });
+                </script>
+              </p>
+            </div>
+          </div>
+
+
+      </div>
+
+    </div>
+
+
+      <div class="row">
+        <div class="col-md-4">
+          <div class="card border-dark mb-3">
+            <div class="card-header">Cat House: 29</div>
+            <div class="card-body text-dark">
+              <p class="card-text">
+                <!--begin chart-->
+                <div class="chart-container">
+
+                <canvas id="cathouse" height="300"></canvas>
+                <script>
+                var ctx = document.getElementById('cathouse').getContext('2d');
+                var cathouse = new Chart(ctx, {
+                type: 'bar',
+                data: {
+
+                labels: [1] ,
+
+                datasets: [
+                {
+                label: 'Cat House Temp',
+                fill: false,
+                data: [29],
+                backgroundColor: 'grey',
+                borderColor: "grey"
+                }
+                ]
+                },
+                  options: {
+                          legend:{
+                                  display: true},
+                  responsive: true,
+                          scales: {
+                                  yAxes: [{
+                                          ticks: {
+                                          beginAtZero: true
+                                          }
+                                  }],
+                                  xAxes:[{display: false
+                                  }]
+                                  },
+
+
+                plugins: {
+                zoom: {
+                  // Container for pan options
+                  pan: {
+                      // Boolean to enable panning
+                      enabled: true,
+
+                      // Panning directions. Remove the appropriate direction to disable
+                      // Eg. 'y' would only allow panning in the y direction
+                      mode: 'xy'
+                  },
+
+                  // Container for zoom options
+                  zoom: {
+                      // Boolean to enable zooming
+                      enabled: true,
+
+                      // Zooming directions. Remove the appropriate direction to disable
+                      // Eg. 'y' would only allow zooming in the y direction
+                      mode: 'xy',
+                  }
+                }
+                }
+
+
+                }
+                });
+
+                </script>
+                </div>
+                <!--end chart-->
+
+              </p>
+            </div>
+          </div>
+
+  </div>
+
+
+        <div class="col-md-8">
+                    <div class="card text-center">
+                  <div class="card-header">
+                    All Sensors
+                  </div>
+                  <div class="card-body">
+                    <p class="card-text">
+
+                      <canvas id="bin_bar" width="400" height="200"></canvas>
+                      <script>
+                      var ctx = document.getElementById('bin_bar');
+                      var bin_bar = new Chart(ctx, {
+                          type: 'bar',
+                          data: {
+                              labels: ['Temp', 'Soil Temp', 'Cat House', 'Sensor2', 'Sensor3', 'Sensor4'],
+                              datasets: [{
+                                  label: 'Temperature',
+                                  data: [{{ current_temp }}, {{ current_soiltemp }}, 29, 5, 2, -3],
+                                  backgroundColor: [
+                                      'rgba(255, 99, 132, 0.2)',
+                                      'rgba(54, 162, 235, 0.2)',
+                                      'rgba(255, 206, 86, 0.2)',
+                                      'rgba(75, 192, 192, 0.2)',
+                                      'rgba(153, 102, 255, 0.2)',
+                                      'rgba(255, 159, 64, 0.2)'
+                                  ],
+                                  borderColor: [
+                                      'rgba(255, 99, 132, 1)',
+                                      'rgba(54, 162, 235, 1)',
+                                      'rgba(255, 206, 86, 1)',
+                                      'rgba(75, 192, 192, 1)',
+                                      'rgba(153, 102, 255, 1)',
+                                      'rgba(255, 159, 64, 1)'
+                                  ],
+                                  borderWidth: 1
+                              }]
+                          },
+                          options: {
+                              scales: {
+                                  yAxes: [{
+                                      ticks: {
+                                          beginAtZero: true
+                                      }
+                                  }]
+                              }
+                          }
+                      });
+                      </script>
+
+
+
+
+
+
+
+
+
+
+                    </p>
+
+                  </div>
+                </div></div>
+      </div>
+
+    </div>
+
+
+  </form>
+
+
+
+  <!--<div id="footer"></div>-->
+
+</body>
+
+</html>

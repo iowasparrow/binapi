@@ -135,7 +135,7 @@ var myChart = new Chart(ctx, {
                 {
             label: 'Soil Temp',
             fill: false,
-            data: [{% for soil in soiltemp %}{{ soil }},{% endfor %}],
+            data: [{% for soil in soiltemps %}{{ soil }},{% endfor %}],
     	    backgroundColor: '#533029',
 		    borderWidth: 3,
 		    borderColor: "#533029"
