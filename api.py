@@ -3,6 +3,7 @@ from flask import Flask, jsonify, render_template
 from flask import make_response
 from flask import abort
 from flask import request
+from flask import flash, redirect
 import sqlite3
 from datetime import datetime, timezone, timedelta
 
@@ -107,17 +108,20 @@ def linechart():
 @app.route('/login', methods=['POST', 'GET'])
 def login():
     error = None
-
     if request.method == 'POST':
-        testvar = (request.form['asitreid'])
+        print("you posted")
     else:
-        #testvar = (request.form['asitreid'])
-        error = request.args.get('asiteid', '')
-        print(error)
-        #error = 'Invalid username/password'
-    # the code below is executed if the request method
-    # was GET or the credentials were invalid
-    return render_template('login.html', error=error)
+        siteid = request.args.get('asiteid', '')
+        if not siteid:
+            print("no site id")
+            return render_template('login.html')
+        print("site id should be here")
+        print(siteid)
+        #check for cookie before creating one.
+        flash("Successful login", "success")
+        res = make_response("Setting a cookie")
+        res.set_cookie('siteid', siteid, max_age=60*60*24*365*2)
+    return res
 
 
 
@@ -125,7 +129,6 @@ def login():
 @app.route('/dashboard')
 def dashboard():
     # here we want to get the value of user (i.e. ?user=some-value)
-    siteid = request.args.get('siteid')
     #  print(dict)
     # return jsonify({'data': dict})
     current_time, current_temp, temp_difference, temp_week_ago, current_soiltemp = get_current_data()
