@@ -22,18 +22,12 @@
     <script src="{{ url_for('static', filename='chartzoom/chartjs-plugin-zoom0.7.4') }}"></script>
     <!--end zoom plugin-->
 
-
-
-
   <script>
     $(function() {
       $("#header").load("http://bintemp.com/nav.html");
       $("#footer").load("footer.html");
     });
   </script>
-
-
-
 
   <style>
     body,
@@ -62,9 +56,25 @@
 <body>
 
   <div id="header"></div>
+
+  
+  
+  <ul class="nav nav-tabs">
+  <li class="nav-item">
+    <a class="nav-link active" href="#">Dashboard</a>
+  </li>
+  <li class="nav-item">
+	  <a class="nav-link" href="linechart?siteid={{siteid}}">Line Chart</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="#">Coming Soon</a>
+  </li>
+</ul>
+  
+  
+  
   <!--  <div class="bg"></div>-->
   <form id="form1" runat="server">
-
 
 
     <br>
