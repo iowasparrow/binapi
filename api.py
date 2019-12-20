@@ -99,7 +99,7 @@ def linechart():
     # return jsonify({'data': dict})
     current_time, current_temp, temp_difference, current_soiltemp, temp_week_ago = get_current_data()
     dates, temps, soiltemps, sensor1, sensor2 = get_all(siteid)
-    return render_template('linechart.html', temp_week_ago=temp_week_ago, temp_difference=temp_difference,temps=temps, dates=dates, soiltemps=soiltemps ,sensor1=sensor1,sensor2=sensor2, current_time=current_time, current_temp=current_temp)
+    return render_template('index.html', temp_week_ago=temp_week_ago, temp_difference=temp_difference,temps=temps, dates=dates, soiltemps=soiltemps, current_soiltemp=current_soiltemp ,sensor1=sensor1,sensor2=sensor2, current_time=current_time, current_temp=current_temp)
 
 
 @app.route('/dashboard')

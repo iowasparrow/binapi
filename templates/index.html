@@ -2,37 +2,42 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
-
-
     <title>Bin Temp</title>
-    <script src="{{ url_for('static', filename='Chart.js') }}"></script>
-    <!--zoom plugin-->
-    <script src="{{ url_for('static', filename='chartzoom/hammerjs2.0.8') }}"></script>
-    <script src="{{ url_for('static', filename='chartzoom/chartjs-plugin-zoom0.7.4') }}"></script>
-    <!--end zoom plugin-->
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.css') }}">
     <script src="{{ url_for('static', filename='Chart.js') }}"></script>
     <script src="{{ url_for('static', filename='jquery-3.4.1.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
     <script src="{{ url_for('static', filename='popper.min.js') }}"></script>
 
+   
+    <!--zoom plugin-->
+    <script src="{{ url_for('static', filename='chartzoom/hammerjs2.0.8') }}"></script>
+    <script src="{{ url_for('static', filename='chartzoom/chartjs-plugin-zoom0.7.4') }}"></script>
+    <!--end zoom plugin-->
+ 
+    
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
 
-  <script>
+
+ <script>
+
   $( function() {
-	$("#header").load("http://bintemp.com/nav.html");
-	$("#footer").load("footer.html");
+	                $("#header").load("http://bintemp.com/nav.html");
+			                  $("#footer").load("footer.html");
 					                      } );
   </script>
-
+<style>
+#chartCont {
+	min-height:500px;
+}
+</style>
 
 </head>
 <body>
 <div id="header"></div>
 <div class="container">
-    <h4 class="text-center">Bin Temperature Monitoring System API</h4>
-    <p class="text-center text-muted"></p>
+    <h4 class="text-center">Bin Temperature Monitoring System</h4>
 
 
 
@@ -41,7 +46,7 @@
     {%if temp_alarm == "true" %}
     <div class="alert alert-danger text-center">Rapid Rise Detected.<br> At least 3&#8457 in one week at 32 or
         below.<br> Check bin.
-        <form method="post" action="/python">
+        <form method="post" action="/bin_temperature">
             <input class="btn btn-secondary" type="submit" name="clear_alarm" value="Clear Alarm"><br>
         </form>
     </div>
@@ -53,24 +58,24 @@
             <div class="col-sm">
                 {% if current_temp > 32 %}
                 Current temp= {{ current_temp }} &#8457; <span
-                    class="alert-warning">The corn is above freezing</span><br>
+		 class="alert-warning"><br>The Temp is above freezing.</span><br>
                 {% else %}
                 Current temp= {{ current_temp }} &#8457;<br>
                 {% endif %}
                 {% if current_temp > 40 %}
-                <span class="alert-warning">Corn is above 40 &#8457;</span><br>
+                <span class="alert-warning">Temp is above 40 &#8457;</span><br>
                 {% endif %}
                 {% if current_temp > 50 %}
-                <span class="alert-danger">Corn is above 50 &#8457;</span><br>
+                <span class="alert-danger">Temp is above 50 &#8457;</span><br>
                 {% endif %}
                 {% if current_temp > 60 %}
-                <span class="alert-danger">Corn is above 60 &#8457;</span><br>
+                <span class="alert-danger">Temp is above 60 &#8457;</span><br>
                 {% endif %}
                 {% if current_temp > 70 %}
-                <span class="alert-danger">Corn is above 70 &#8457;</span><br>
+                <span class="alert-danger">Temp is above 70 &#8457;</span><br>
                 {% endif %}
                 {% if current_temp < 32 %}
-                <span class="alert-success">Grain is frozen.</span><br>
+                <span class="alert-success">Temp is below 32, frozen.</span><br>
                 {% endif %}
                 Temp 1 week ago= {{ temp_week_ago }}<br>
 
@@ -83,8 +88,24 @@
                 Last Sample Time = {{ current_time }} <br>
             </div>
             <div class="col-sm">
+                {% if pin_status == True %}
+                <span class="badge badge-success">Fan On</span>
+                {% else %}
+                <span class="badge badge-danger">Fan Off</span>
+                {% endif %}
+		{% if current_soiltemp - current_temp >= 20 and current_soiltemp > 30 %}
+		<p>Air is 20 degrees cooler than the corn, and the grain is above 30, turn on the fan.</p>
+		{% else %}
+			<p>Fan is not recommended now.</p>
+		{% endif %}
+
             </div>
             <div class="col-sm">
+                {% if server_up == "yes" %}
+                <span class="badge badge-success">Connected To Server</span>
+                {% else %}
+                <span class="badge badge-danger">Server Disconnected</span>
+                {% endif %}
             </div>
         </div>
 
@@ -94,11 +115,12 @@
 
 
 
-    <div class="container">
+    <div id="chartCont" class="container">
         <div class="row">
 <!--begin chart-->
-        <div class="chart-container" style="position: relative; height:70vh; width:90vw">
-            <canvas id="myChart" width="400" height="400"></canvas>
+<div class="chart-container" style="position: relative; height:70vh; width:90vw">
+
+<canvas id="myChart" height="300"></canvas>
             <script>
 var ctx = document.getElementById('myChart').getContext('2d');
 var myChart = new Chart(ctx, {
@@ -109,46 +131,92 @@ var myChart = new Chart(ctx, {
 
         datasets: [
         {
-            label: 'Temp',
+            label: 'Temp Sensor',
             fill: false,
             data: [{% for temp in temps %}{{ temp }},{% endfor %}],
     	    backgroundColor: 'green',
-		    borderWidth: 3,
 		    borderColor: "green"
         },
         {
-            label: 'Sensor 1',
-            fill: false,
-            data: [{% for sense1 in sensor1 %}{{ sense1 }},{% endfor %}],
-    	    backgroundColor: 'orange',
-		    borderWidth: 3,
-		    borderColor: "orange"
-        },
-                {
-            label: 'Sensor 2',
-            fill: false,
-            data: [{% for sense2 in sensor2 %}{{ sense2 }},{% endfor %}],
-    	    backgroundColor: 'red',
-		    borderWidth: 3,
-		    borderColor: "red"
-        },
-                {
             label: 'Soil Temp',
             fill: false,
             data: [{% for soil in soiltemps %}{{ soil }},{% endfor %}],
-    	    backgroundColor: '#533029',
-		    borderWidth: 3,
-		    borderColor: "#533029"
-        }]
+	    backgroundColor: "orange",
+	    borderColor: "orange"
+        },
+	{
+	label: 'Sensor 1',
+	fill: false,
+	data: [{% for sensor in sensor1 %}{{ sensor }},{% endfor %}],
+		backgroundColor: 'blue',
+		borderColor: "blue"
+	}
+	]
     },
 		options: {
-        scales: {
+	responsive: true,
+	scales: {
             yAxes: [{
                     ticks: {
                     beginAtZero: false
                 }
             }]
+        },
+
+
+
+
+
+
+
+       plugins: {
+            zoom: {
+                // Container for pan options
+                pan: {
+                    // Boolean to enable panning
+                    enabled: true,
+
+                    // Panning directions. Remove the appropriate direction to disable 
+                    // Eg. 'y' would only allow panning in the y direction
+                    mode: 'xy'
+                },
+
+                // Container for zoom options
+                zoom: {
+                    // Boolean to enable zooming
+                    enabled: true,
+
+                    // Zooming directions. Remove the appropriate direction to disable 
+                    // Eg. 'y' would only allow zooming in the y direction
+                    mode: 'xy',
+                }
+            }
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 });
 
