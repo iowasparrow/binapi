@@ -99,7 +99,27 @@ def linechart():
     # return jsonify({'data': dict})
     current_time, current_temp, temp_difference, current_soiltemp, temp_week_ago = get_current_data()
     dates, temps, soiltemps, sensor1, sensor2 = get_all(siteid)
-    return render_template('index.html', temp_week_ago=temp_week_ago, temp_difference=temp_difference,temps=temps, dates=dates, soiltemps=soiltemps, current_soiltemp=current_soiltemp ,sensor1=sensor1,sensor2=sensor2, current_time=current_time, current_temp=current_temp)
+    return render_template('index.html', siteid=siteid, temp_week_ago=temp_week_ago, temp_difference=temp_difference,temps=temps, dates=dates, soiltemps=soiltemps, current_soiltemp=current_soiltemp ,sensor1=sensor1,sensor2=sensor2, current_time=current_time, current_temp=current_temp)
+
+
+
+
+@app.route('/login', methods=['POST', 'GET'])
+def login():
+    error = None
+
+    if request.method == 'POST':
+        testvar = (request.form['asitreid'])
+    else:
+        #testvar = (request.form['asitreid'])
+        error = request.args.get('asiteid', '')
+        print(error)
+        #error = 'Invalid username/password'
+    # the code below is executed if the request method
+    # was GET or the credentials were invalid
+    return render_template('login.html', error=error)
+
+
 
 
 @app.route('/dashboard')
@@ -110,7 +130,7 @@ def dashboard():
     # return jsonify({'data': dict})
     current_time, current_temp, temp_difference, temp_week_ago, current_soiltemp = get_current_data()
     dates, temps, soiltemps, sensor1, sensor2 = get_all(siteid)
-    return render_template('dashboard.html', temp_week_ago=temp_week_ago, temp_difference=temp_difference,temps=temps, dates=dates, soiltemps=soiltemps ,sensor1=sensor1,sensor2=sensor2, current_time=current_time, current_temp=current_temp, current_soiltemp=current_soiltemp)
+    return render_template('dashboard.html', siteid=siteid, temp_week_ago=temp_week_ago, temp_difference=temp_difference,temps=temps, dates=dates, soiltemps=soiltemps ,sensor1=sensor1,sensor2=sensor2, current_time=current_time, current_temp=current_temp, current_soiltemp=current_soiltemp)
 
 
 
