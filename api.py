@@ -118,11 +118,20 @@ def login():
         print("site id should be here")
         print(siteid)
         #check for cookie before creating one.
-        flash("Successful login", "success")
-        res = make_response("Setting a cookie")
-        res.set_cookie('siteid', siteid, max_age=60*60*24*365*2)
+        #flash("Successful login", "success")
+        #res = make_response("Setting a cookie")
+        #res.set_cookie('siteid', siteid, max_age=60*60*24*365*2)
     return res
 
+@app.route('/cookie/')
+def cookie():
+    siteid = '23'
+    if not request.cookies.get('siteid'):
+        res = make_response("Setting a cookie")
+        res.set_cookie('siteid', siteid, max_age=60*60*24*365*2)
+    else:
+        res = make_response("Value of cookie foo is {}".format(request.cookies.get('siteid')))
+    return res
 
 
 
