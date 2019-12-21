@@ -6,19 +6,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.css') }}">
-    <script src="{{ url_for('static', filename='Chart.js') }}"></script>
     <script src="{{ url_for('static', filename='jquery-3.4.1.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
     <script src="{{ url_for('static', filename='popper.min.js') }}"></script>
-    <!--zoom plugin-->
-    <script src="{{ url_for('static', filename='chartzoom/hammerjs2.0.8') }}"></script>
-    <script src="{{ url_for('static', filename='chartzoom/chartjs-plugin-zoom0.7.4') }}"></script>
-    <!--end zoom plugin-->
 
   <script>
     $(function() {
       $("#header").load("http://bintemp.com/nav.html");
-      $("#footer").load("footer.html");
     });
   </script>
 
@@ -32,9 +26,6 @@
     <div class="form-group">
       <label for="pwd">Site ID</label>
       <input type="text" class="form-control" id="asiteid" placeholder="Enter Site ID" name="asiteid">
-    </div>
-    <div class="checkbox">
-      <label><input type="checkbox" name="remember"> Remember me</label>
     </div>
     <button type="submit" class="btn btn-primary">Submit</button>
   </form>

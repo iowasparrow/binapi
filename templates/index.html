@@ -23,11 +23,12 @@
  <script>
 
   $( function() {
-	                $("#header").load("http://bintemp.com/nav.html");
-			                  $("#footer").load("footer.html");
-					                      } );
+	$("#header").load("http://bintemp.com/nav.html");
+	$("#footer").load("footer.html");
+} );
   </script>
-<style>
+
+  <style>
 #chartCont {
 	min-height:500px;
 }
@@ -39,15 +40,12 @@
 
  <ul class="nav nav-tabs">
   <li class="nav-item">
-	  <a class="nav-link" href="dashboard?siteid={{siteid}}">Dashboard</a>
+	  <a class="nav-link" href="dashboard">Dashboard</a>
   </li>
   <li class="nav-item">
-          <a class="nav-link active" href="linechart?siteid={{siteid}}">Line Chart</a>
+          <a class="nav-link active" href="linechart">Line Chart</a>
   </li>
-  <li class="nav-item">
-    <a class="nav-link" href="#">Coming Soon</a>
-  </li>
-</ul>
+ </ul>
 
 
 <div class="container">

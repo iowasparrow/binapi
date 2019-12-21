@@ -108,9 +108,9 @@ def login():
     
     if not request.cookies.get('siteid'):
         print("no cookie found")
-    error = request.values.get("asiteid")
+    error = ''
     siteid = request.values.get("asiteid")
-    print(siteid)
+    #print(siteid)
     if siteid:
         res = cookie(siteid)
         return res
@@ -124,7 +124,6 @@ def cookie(siteid = '0'):
     if not request.cookies.get('siteid'):
         res = make_response(redirect('/binapi/dashboard'))
         res.set_cookie('siteid', siteid, max_age=60*60*24*365*2)
-        print("in the cookie function making one")
         return res
     else:
         dashboard()
@@ -140,7 +139,6 @@ def dashboard():
         return res
     mycookie = request.cookies.get('siteid')
     siteid = mycookie
-    # here we want to get the value of user (i.e. ?user=some-value)
     #  print(dict)
     # return jsonify({'data': dict})
     current_time, current_temp, temp_difference, temp_week_ago, current_soiltemp = get_current_data()
