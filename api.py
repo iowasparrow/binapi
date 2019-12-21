@@ -111,17 +111,15 @@ def login():
     if request.method == 'POST':
         print("you posted")
     else:
-        siteid = request.args.get('asiteid', '')
-        if not siteid:
-            print("no site id")
-            return render_template('login.html')
-        print("site id should be here")
-        print(siteid)
+        if not request.cookies.get('siteid'):    
+            print("no cookie")
+            cookie()
+            print("made a cookie")
         #check for cookie before creating one.
         #flash("Successful login", "success")
         #res = make_response("Setting a cookie")
         #res.set_cookie('siteid', siteid, max_age=60*60*24*365*2)
-    return res
+    return "logging in cookie made"
 
 @app.route('/cookie/')
 def cookie():
@@ -129,8 +127,9 @@ def cookie():
     if not request.cookies.get('siteid'):
         res = make_response("Setting a cookie")
         res.set_cookie('siteid', siteid, max_age=60*60*24*365*2)
+        print("in the cookie function making one")
     else:
-        res = make_response("Value of cookie foo is {}".format(request.cookies.get('siteid')))
+        res = make_response("Value of cookie siteid is {}".format(request.cookies.get('siteid')))
     return res
 
 
@@ -142,7 +141,8 @@ def dashboard():
     # return jsonify({'data': dict})
     current_time, current_temp, temp_difference, temp_week_ago, current_soiltemp = get_current_data()
     dates, temps, soiltemps, sensor1, sensor2 = get_all(siteid)
-    return render_template('dashboard.html', siteid=siteid, temp_week_ago=temp_week_ago, temp_difference=temp_difference,temps=temps, dates=dates, soiltemps=soiltemps ,sensor1=sensor1,sensor2=sensor2, current_time=current_time, current_temp=current_temp, current_soiltemp=current_soiltemp)
+    res = make_response("Value of cookie siteid is {}".format(request.cookies.get('siteid')))
+    return render_template('dashboard.html', siteid=siteid, temp_week_ago=temp_week_ago, res=res, temp_difference=temp_difference,temps=temps, dates=dates, soiltemps=soiltemps ,sensor1=sensor1,sensor2=sensor2, current_time=current_time, current_temp=current_temp, current_soiltemp=current_soiltemp)
 
 
 
