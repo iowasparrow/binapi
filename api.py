@@ -103,48 +103,56 @@ def linechart():
     return render_template('index.html', siteid=siteid, temp_week_ago=temp_week_ago, temp_difference=temp_difference,temps=temps, dates=dates, soiltemps=soiltemps, current_soiltemp=current_soiltemp ,sensor1=sensor1,sensor2=sensor2, current_time=current_time, current_temp=current_temp)
 
 
-
-
 @app.route('/login', methods=['POST', 'GET'])
 def login():
-    error = None
-    if request.method == 'POST':
-        print("you posted")
-    else:
-        if not request.cookies.get('siteid'):    
-            print("no cookie")
-            cookie()
-            print("made a cookie")
-        #check for cookie before creating one.
-        #flash("Successful login", "success")
-        #res = make_response("Setting a cookie")
-        #res.set_cookie('siteid', siteid, max_age=60*60*24*365*2)
-    return "logging in cookie made"
+    
+    if not request.cookies.get('siteid'):
+        print("no cookie found")
+    error = request.values.get("asiteid")
+    siteid = request.values.get("asiteid")
+    print(siteid)
+    if siteid:
+        res = cookie(siteid)
+        return res
+    return render_template('login.html', error=error)
+
+
+
 
 @app.route('/cookie/')
-def cookie():
-    siteid = '23'
+def cookie(siteid = '0'):
     if not request.cookies.get('siteid'):
-        res = make_response("Setting a cookie")
+        res = make_response(redirect('/binapi/dashboard'))
         res.set_cookie('siteid', siteid, max_age=60*60*24*365*2)
         print("in the cookie function making one")
+        return res
     else:
-        res = make_response("Value of cookie siteid is {}".format(request.cookies.get('siteid')))
-    return res
+        dashboard()
+        #res = make_response("Value of cookie siteid is {}".format(request.cookies.get('siteid')))
+    return dashboard()
 
 
 
 @app.route('/dashboard')
 def dashboard():
+    if not request.cookies.get('siteid'):
+        res = make_response(redirect('/binapi/login'))
+        return res
+    mycookie = request.cookies.get('siteid')
+    siteid = mycookie
     # here we want to get the value of user (i.e. ?user=some-value)
     #  print(dict)
     # return jsonify({'data': dict})
     current_time, current_temp, temp_difference, temp_week_ago, current_soiltemp = get_current_data()
     dates, temps, soiltemps, sensor1, sensor2 = get_all(siteid)
-    res = make_response("Value of cookie siteid is {}".format(request.cookies.get('siteid')))
-    return render_template('dashboard.html', siteid=siteid, temp_week_ago=temp_week_ago, res=res, temp_difference=temp_difference,temps=temps, dates=dates, soiltemps=soiltemps ,sensor1=sensor1,sensor2=sensor2, current_time=current_time, current_temp=current_temp, current_soiltemp=current_soiltemp)
+    return render_template('dashboard.html', siteid=siteid, temp_week_ago=temp_week_ago, mycookie=mycookie, temp_difference=temp_difference,temps=temps, dates=dates, soiltemps=soiltemps ,sensor1=sensor1,sensor2=sensor2, current_time=current_time, current_temp=current_temp, current_soiltemp=current_soiltemp)
 
 
+@app.route('/delete-cookie/')
+def delete_cookie():
+    res = make_response("Logged Out")
+    res.set_cookie('siteid', max_age=0)
+    return res
 
 @app.route('/todo/api/v1.0/tasks/<int:task_id>', methods=['GET'])
 def get_task(task_id):
