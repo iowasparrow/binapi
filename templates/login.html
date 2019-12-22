@@ -19,7 +19,8 @@
 
 </head>
 <body>
-	<div id="header"></div>
+	
+<div id="header"></div>
 <div class="container">
 	<h2>Dashboard Login</h2>
   <form action="/binapi/login" method="post">
@@ -30,6 +31,15 @@
     <button type="submit" class="btn btn-primary">Submit</button>
   </form>
 </div>
+	{% with messages = get_flashed_messages() %}
+	  {% if messages %}
+	    {% for message in messages %}
+		  <div class="alert alert-warning role="alert">
+			{{message}}
+		  </div>
+		{% endfor %}
+	  {% endif %}
+	{% endwith %}
 {{ error }}
 </body>
 </html>

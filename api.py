@@ -94,8 +94,11 @@ def get_current_data():  # get current values for display on web page
 
 @app.route('/linechart')
 def linechart():
-    # here we want to get the value of user (i.e. ?user=some-value)
-    siteid = request.args.get('siteid')
+    if not request.cookies.get('siteid'):
+        res = make_response(redirect('/binapi/login'))
+        return res
+    mycookie = request.cookies.get('siteid')
+    siteid=mycookie   
     #  print(dict)
     # return jsonify({'data': dict})
     current_time, current_temp, temp_difference, current_soiltemp, temp_week_ago = get_current_data()
@@ -106,8 +109,8 @@ def linechart():
 @app.route('/login', methods=['POST', 'GET'])
 def login():
     
-    if not request.cookies.get('siteid'):
-        print("no cookie found")
+    if request.cookies.get('siteid'):
+        flash_text()
     error = ''
     siteid = request.values.get("asiteid")
     #print(siteid)
@@ -117,7 +120,9 @@ def login():
     return render_template('login.html', error=error)
 
 
-
+def flash_text():
+    flash("You are logged in")
+    print("you are logged in")
 
 @app.route('/cookie/')
 def cookie(siteid = '0'):
