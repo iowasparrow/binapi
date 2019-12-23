@@ -85,14 +85,6 @@
 
 
 
-
-
-
-
-
-
-
-
     <br>
     <center>
       <h3>Sensor Dashboard</h3><small><span class="text-muted">View any sensor from any smartphone or computer using IoT technology.</span></small>
@@ -112,7 +104,7 @@
 
 
           <div class="card border-dark mb-3">
-		  <div class="card-header">{{ current_temp }}&deg;<div>Air Temp</div></div>
+		  <div class="card-header text-right"><h4>{{ current_temp }}&deg;</h4><div>Air Temp</div></div>
             <div class="card-body text-dark">
               <p class="card-text"><!--begin chart-->
 <div class="chart-container">
@@ -190,7 +182,7 @@ var myChart = new Chart(ctx, {
 
 
           <div class="card border-dark mb-3">
-		  <div class="card-header">{{ current_soiltemp }}&deg;<div>Soil Temp</div></div>
+		  <div class="card-header text-right"><h4>{{ current_soiltemp }}&deg;</h4><div>Soil Temp</div></div>
             <div class="card-body text-dark">
               <p class="card-text"><p class="card-text"><!--begin chart-->
 <div class="chart-container">
@@ -271,7 +263,7 @@ var myChart = new Chart(ctx, {
 
 
           <div class="card border-dark mb-3">
-            <div class="card-header">Dryer Temp: 134</div>
+		  <div class="card-header text-right"><h4>134&deg;</h4><div>Dryer Temp</div></div>
             <div class="card-body text-dark">
               <p class="card-text">
 
@@ -328,7 +320,7 @@ var myChart = new Chart(ctx, {
       <div class="row">
         <div class="col-md-4">
           <div class="card border-dark mb-3">
-              <div class="card-header text-right">{{current_sensor1}}&deg;<div>Hot Tub</div></div>
+		  <div class="card-header text-right"><h4>{{current_sensor1}}&deg;</h4><div>Hot Tub</div></div>
             <div class="card-body text-dark">
               <p class="card-text">
                 <!--begin chart-->
@@ -428,7 +420,7 @@ var myChart = new Chart(ctx, {
                                   backgroundColor: [
                                       'rgba(255, 99, 132, 0.5)',
                                       'rgba(54, 162, 235, 0.5)',
-                                      'rgba(255, 206, 86, 0.5)',
+				      'rgba(255, 206, 86, 0.5)',
                                       'rgba(75, 192, 192, 0.5)',
                                       'rgba(153, 102, 255, 0.5)',
                                       'rgba(255, 159, 64, 0.5)'
