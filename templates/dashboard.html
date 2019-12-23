@@ -112,7 +112,7 @@
 
 
           <div class="card border-dark mb-3">
-		  <div class="card-header">Air Temp:  {{ current_temp }}</div>
+		  <div class="card-header">{{ current_temp }}&deg;<div>Air Temp</div></div>
             <div class="card-body text-dark">
               <p class="card-text"><!--begin chart-->
 <div class="chart-container">
@@ -190,7 +190,7 @@ var myChart = new Chart(ctx, {
 
 
           <div class="card border-dark mb-3">
-		  <div class="card-header">Soil Temp: {{ current_soiltemp }}</div>
+		  <div class="card-header">{{ current_soiltemp }}&deg;<div>Soil Temp</div></div>
             <div class="card-body text-dark">
               <p class="card-text"><p class="card-text"><!--begin chart-->
 <div class="chart-container">
@@ -328,16 +328,16 @@ var myChart = new Chart(ctx, {
       <div class="row">
         <div class="col-md-4">
           <div class="card border-dark mb-3">
-            <div class="card-header">Cat House: 29</div>
+              <div class="card-header text-right">{{current_sensor1}}&deg;<div>Hot Tub</div></div>
             <div class="card-body text-dark">
               <p class="card-text">
                 <!--begin chart-->
                 <div class="chart-container">
 
-                <canvas id="cathouse" height="300"></canvas>
+                <canvas id="sense1" height="300"></canvas>
                 <script>
-                var ctx = document.getElementById('cathouse').getContext('2d');
-                var cathouse = new Chart(ctx, {
+                var ctx = document.getElementById('sense1').getContext('2d');
+                var sense1 = new Chart(ctx, {
                 type: 'bar',
                 data: {
 
@@ -345,9 +345,9 @@ var myChart = new Chart(ctx, {
 
                 datasets: [
                 {
-                label: 'Cat House Temp',
+                label: 'Hot Tub',
                 fill: false,
-                data: [29],
+                data: [ {{ current_sensor1 }} ],
                 backgroundColor: 'grey',
                 borderColor: "grey"
                 }
@@ -360,7 +360,7 @@ var myChart = new Chart(ctx, {
                           scales: {
                                   yAxes: [{
                                           ticks: {
-                                          beginAtZero: true
+                                          beginAtZero: false
                                           }
                                   }],
                                   xAxes:[{display: false
@@ -421,17 +421,17 @@ var myChart = new Chart(ctx, {
                       var bin_bar = new Chart(ctx, {
                           type: 'bar',
                           data: {
-                              labels: ['Temp', 'Soil Temp', 'Cat House', 'Sensor2', 'Sensor3', 'Sensor4'],
+                              labels: ['Temp', 'Soil Temp', 'Hot Tub', 'Sensor2', 'Sensor3', 'Sensor4'],
                               datasets: [{
                                   label: 'Temperature',
-                                  data: [{{ current_temp }}, {{ current_soiltemp }}, 29, 5, 2, -3],
+                                  data: [{{ current_temp }}, {{ current_soiltemp }}, {{ current_sensor1 }}, 5, 2, -3],
                                   backgroundColor: [
-                                      'rgba(255, 99, 132, 0.2)',
-                                      'rgba(54, 162, 235, 0.2)',
-                                      'rgba(255, 206, 86, 0.2)',
-                                      'rgba(75, 192, 192, 0.2)',
-                                      'rgba(153, 102, 255, 0.2)',
-                                      'rgba(255, 159, 64, 0.2)'
+                                      'rgba(255, 99, 132, 0.5)',
+                                      'rgba(54, 162, 235, 0.5)',
+                                      'rgba(255, 206, 86, 0.5)',
+                                      'rgba(75, 192, 192, 0.5)',
+                                      'rgba(153, 102, 255, 0.5)',
+                                      'rgba(255, 159, 64, 0.5)'
                                   ],
                                   borderColor: [
                                       'rgba(255, 99, 132, 1)',

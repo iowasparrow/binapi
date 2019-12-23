@@ -77,19 +77,22 @@ def check_rapid_rise(current_temp):
         return formatted_temp_difference, temp_week_ago
 
 
-def get_current_data():  # get current values for display on web page
+def get_current_data():  # get current values for display on dashboard
     conn = sqlite3.connect(database, check_same_thread=False)
     curs = conn.cursor()
     current_time = []
     current_temp = []
     current_soiltemp = []
+    current_sensor1 = []
+    current_sensor2 = []
     for row in curs.execute("SELECT * FROM tbl_data ORDER BY timestamp DESC LIMIT 1"):
         current_time = str(row[0])
         current_temp = row[1]
         current_soiltemp = row[3]
+        current_sensor1 = row[4]
     conn.close()
     temp_difference, temp_week_ago = check_rapid_rise(current_temp)
-    return current_time, current_temp, temp_difference, temp_week_ago, current_soiltemp
+    return current_time, current_temp, temp_difference, temp_week_ago, current_soiltemp, current_sensor1
 
 
 @app.route('/linechart')
@@ -101,7 +104,7 @@ def linechart():
     siteid=mycookie   
     #  print(dict)
     # return jsonify({'data': dict})
-    current_time, current_temp, temp_difference, current_soiltemp, temp_week_ago = get_current_data()
+    current_time, current_temp, temp_difference, current_soiltemp, temp_week_ago, current_sensor1 = get_current_data()
     dates, temps, soiltemps, sensor1, sensor2 = get_all(siteid)
     return render_template('index.html', siteid=siteid, temp_week_ago=temp_week_ago, temp_difference=temp_difference,temps=temps, dates=dates, soiltemps=soiltemps, current_soiltemp=current_soiltemp ,sensor1=sensor1,sensor2=sensor2, current_time=current_time, current_temp=current_temp)
 
@@ -146,9 +149,9 @@ def dashboard():
     siteid = mycookie
     #  print(dict)
     # return jsonify({'data': dict})
-    current_time, current_temp, temp_difference, temp_week_ago, current_soiltemp = get_current_data()
+    current_time, current_temp, temp_difference, temp_week_ago, current_soiltemp, current_sensor1 = get_current_data()
     dates, temps, soiltemps, sensor1, sensor2 = get_all(siteid)
-    return render_template('dashboard.html', siteid=siteid, temp_week_ago=temp_week_ago, mycookie=mycookie, temp_difference=temp_difference,temps=temps, dates=dates, soiltemps=soiltemps ,sensor1=sensor1,sensor2=sensor2, current_time=current_time, current_temp=current_temp, current_soiltemp=current_soiltemp)
+    return render_template('dashboard.html', siteid=siteid, temp_week_ago=temp_week_ago, mycookie=mycookie, temp_difference=temp_difference,temps=temps, dates=dates, soiltemps=soiltemps ,sensor1=sensor1, current_sensor1=current_sensor1, sensor2=sensor2, current_time=current_time, current_temp=current_temp, current_soiltemp=current_soiltemp)
 
 
 @app.route('/delete-cookie/')
@@ -196,7 +199,7 @@ def create_task():
     # return temp, siteid
 
 
-def insert_data(temp, siteid, soiltemp, sensor1,sensor2):
+def insert_data(temp, siteid, soiltemp, sensor1, sensor2):
     print("we made it to the function")
     print(database)
     conn = sqlite3.connect(database)
