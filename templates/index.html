@@ -72,12 +72,7 @@
     <div class="container">
         <div class="row">
             <div class="col-sm">
-                {% if current_temp > 32 %}
-                Current temp= {{ current_temp }} &#8457; <span
-		 class="alert-warning"><br>The Temp is above freezing.</span><br>
-                {% else %}
                 Current temp= {{ current_temp }} &#8457;<br>
-                {% endif %}
                 {% if current_temp > 40 %}
                 <span class="alert-warning">Temp is above 40 &#8457;</span><br>
                 {% endif %}

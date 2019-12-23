@@ -57,14 +57,14 @@
 
   <div id="header"></div>
 
-  
-  
+
+
   <ul class="nav nav-tabs">
   <li class="nav-item">
     <a class="nav-link active" href="#">Dashboard</a>
   </li>
-  
-  
+
+
   <li class="nav-item">
 	  <a class="nav-link" href="linechart">Line Chart</a>
   </li>
@@ -73,9 +73,9 @@
 	  <a class="nav-link disabled" href="#">SiteID:{{siteid}}</a>
   </li>
 </ul>
-  
-  
-  
+
+
+
   <!--  <div class="bg"></div>-->
   <form id="form1" runat="server">
 
@@ -95,27 +95,20 @@
     <br>
 
     <div class="container">
-
-
-
       <div class="row">
-
         <div class="col-sm-4">
-
-
+          <!--begin card and chart-->
           <div class="card border-dark mb-3">
 		  <div class="card-header text-right"><h4>{{ current_temp }}&deg;</h4><div>Air Temp</div></div>
             <div class="card-body text-dark">
               <p class="card-text"><!--begin chart-->
 <div class="chart-container">
-
 <canvas id="myChart" height="300"></canvas>
             <script>
 var ctx = document.getElementById('myChart').getContext('2d');
 var myChart = new Chart(ctx, {
     type: 'line',
     data: {
-
         labels: [{% for date in dates %}'{{ date }}',{% endfor %}] ,
 
         datasets: [
@@ -139,7 +132,6 @@ var myChart = new Chart(ctx, {
 				xAxes:[{display: false
 				}]
        				},
-
 
        plugins: {
             zoom: {
@@ -173,7 +165,7 @@ var myChart = new Chart(ctx, {
         </div>
     <!--end chart--></p>
             </div>
-          </div>
+          </div><!--end card-->
 
 
 </div>
@@ -448,20 +440,88 @@ var myChart = new Chart(ctx, {
                       });
                       </script>
 
-
-
-
-
-
-
-
-
-
                     </p>
 
                   </div>
-                </div></div>
+                </div>
+              </div>
       </div>
+
+      <div class="row">
+        <div class="col-sm-4">
+          <!--begin card and chart-->
+          <div class="card border-dark mb-3">
+      <div class="card-header text-right"><h4>{{ current_sensor1 }}&deg;</h4><div>Hot Tub</div></div>
+            <div class="card-body text-dark">
+              <p class="card-text"><!--begin chart-->
+<div class="chart-container">
+<canvas id="sensor1Line" height="300"></canvas>
+            <script>
+var ctx = document.getElementById('sensor1Line').getContext('2d');
+var sensor1Line = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: [{% for date in dates %}'{{ date }}',{% endfor %}] ,
+
+        datasets: [
+        {
+            label: 'Hot Tub',
+            fill: false,
+            data: [{% for sensor in sensor1 %}{{ sensor }},{% endfor %}],
+            backgroundColor: 'orange',
+                    borderColor: "orange"
+        }
+        ]
+    },
+                options: {
+    responsive: true,
+    spanGaps: true,
+            scales: {
+                  yAxes: [{
+                          ticks: {
+                          beginAtZero: false
+                      }
+                  }],
+        xAxes:[{display: false
+        }]
+              },
+
+       plugins: {
+            zoom: {
+                // Container for pan options
+                pan: {
+                    // Boolean to enable panning
+                    enabled: true,
+
+                    // Panning directions. Remove the appropriate direction to disable
+                    // Eg. 'y' would only allow panning in the y direction
+                    mode: 'xy'
+                },
+
+                // Container for zoom options
+                zoom: {
+                    // Boolean to enable zooming
+                    enabled: true,
+
+                    // Zooming directions. Remove the appropriate direction to disable
+                    // Eg. 'y' would only allow zooming in the y direction
+                    mode: 'xy',
+                }
+            }
+        }
+
+
+    }
+});
+
+            </script>
+        </div>
+    <!--end chart--></p>
+            </div>
+          </div><!--end card-->
+
+
+</div>
 
     </div>
 
