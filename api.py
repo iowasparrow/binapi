@@ -24,7 +24,6 @@ def get_all(siteid):  # This returns all entries in the database into a dict and
     # we have to change site id to a list because when we get to double digits it thinks we are passing in a list of characters.
     curs.execute(sql, [siteid])
     
-    
     data = curs.fetchall()
     dates = []
     temps = []
@@ -41,7 +40,18 @@ def get_all(siteid):  # This returns all entries in the database into a dict and
         temps.append(row[1])
         #siteids.append(row[2])
         soiltemps.append(row[3])
-        sensor1.append(row[4])
+        
+        #sensor1.append(row[4])
+        
+        
+        if row[4] == None:
+            #convert None to null so the chart is happy
+            sensor1.append('null')
+        elif row[4] == 0:
+            sensor1.append('null')
+        else:
+            sensor1.append(row[4])
+
         sensor2.append(row[5])
         # sensor3append(row[6])
         # sensor4.append(row[7])
@@ -51,10 +61,22 @@ def get_all(siteid):  # This returns all entries in the database into a dict and
         dict[row[0]] = {'date': row[0], 'temp': row[1], 'soiltemps':row[3] ,'sensor1': row[4], 'sensor2': row[5]}
 
     conn.close()
-    # print(dict)
+    #print(dict)
     return dates, temps, soiltemps, sensor1, sensor2
     #return jsonify({'data': dict})
 
+
+def get_average():
+    conn = sqlite3.connect(database, check_same_thread=False)
+    curs = conn.cursor()
+    sql = "SELECT avg(sensor1) FROM tbl_data"
+    # we have to change site id to a list because when we get to double digits it thinks we are passing in a list of characters.
+    curs.execute(sql)
+    data = curs.fetchall()
+    x = data[0]
+    y= round(x[0],2)
+
+    return y
 
 
 def check_rapid_rise(current_temp):
@@ -149,9 +171,10 @@ def dashboard():
     siteid = mycookie
     #  print(dict)
     # return jsonify({'data': dict})
+    avg = get_average()
     current_time, current_temp, temp_difference, temp_week_ago, current_soiltemp, current_sensor1 = get_current_data()
     dates, temps, soiltemps, sensor1, sensor2 = get_all(siteid)
-    return render_template('dashboard.html', siteid=siteid, temp_week_ago=temp_week_ago, mycookie=mycookie, temp_difference=temp_difference,temps=temps, dates=dates, soiltemps=soiltemps ,sensor1=sensor1, current_sensor1=current_sensor1, sensor2=sensor2, current_time=current_time, current_temp=current_temp, current_soiltemp=current_soiltemp)
+    return render_template('dashboard.html', siteid=siteid, avg=avg, temp_week_ago=temp_week_ago, mycookie=mycookie, temp_difference=temp_difference,temps=temps, dates=dates, soiltemps=soiltemps ,sensor1=sensor1, current_sensor1=current_sensor1, sensor2=sensor2, current_time=current_time, current_temp=current_temp, current_soiltemp=current_soiltemp)
 
 
 @app.route('/delete-cookie/')
@@ -200,16 +223,16 @@ def create_task():
 
 
 def insert_data(temp, siteid, soiltemp, sensor1, sensor2):
-    print("we made it to the function")
+    print("insert date into database function")
     print(database)
     conn = sqlite3.connect(database)
     curs = conn.cursor()
     timestamp = datetime.now()
     # print(timestamp)
-    print("SENSOR1=:")
-    print(sensor1)
+    #print("SENSOR1=:")
+    #print(sensor1)
     curs.execute("INSERT INTO tbl_data values((?),(?),(?),(?),(?),(?),(?),(?),(?),(?))",
-                 (timestamp, temp, siteid, soiltemp, sensor1, sensor2, 0, 0, 0, 0))
+                 (timestamp, temp, siteid, soiltemp, sensor1, None, None, None, None, None))
     conn.commit()
     conn.close()
 

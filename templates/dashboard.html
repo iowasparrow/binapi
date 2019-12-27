@@ -17,6 +17,10 @@
     <script src="{{ url_for('static', filename='jquery-3.4.1.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
     <script src="{{ url_for('static', filename='popper.min.js') }}"></script>
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.css">
+
     <!--zoom plugin-->
     <script src="{{ url_for('static', filename='chartzoom/hammerjs2.0.8') }}"></script>
     <script src="{{ url_for('static', filename='chartzoom/chartjs-plugin-zoom0.7.4') }}"></script>
@@ -77,7 +81,7 @@
 
 
   <!--  <div class="bg"></div>-->
-  <form id="form1" runat="server">
+
 
 
 
@@ -103,7 +107,7 @@
             <div class="card-body text-dark">
               <p class="card-text"><!--begin chart-->
 <div class="chart-container">
-<canvas id="myChart" height="300"></canvas>
+<canvas id="myChart" height="200"></canvas>
             <script>
 var ctx = document.getElementById('myChart').getContext('2d');
 var myChart = new Chart(ctx, {
@@ -132,32 +136,6 @@ var myChart = new Chart(ctx, {
 				xAxes:[{display: false
 				}]
        				},
-
-       plugins: {
-            zoom: {
-                // Container for pan options
-                pan: {
-                    // Boolean to enable panning
-                    enabled: true,
-
-                    // Panning directions. Remove the appropriate direction to disable
-                    // Eg. 'y' would only allow panning in the y direction
-                    mode: 'xy'
-                },
-
-                // Container for zoom options
-                zoom: {
-                    // Boolean to enable zooming
-                    enabled: true,
-
-                    // Zooming directions. Remove the appropriate direction to disable
-                    // Eg. 'y' would only allow zooming in the y direction
-                    mode: 'xy',
-                }
-            }
-        }
-
-
     }
 });
 
@@ -174,12 +152,12 @@ var myChart = new Chart(ctx, {
 
 
           <div class="card border-dark mb-3">
-		  <div class="card-header text-right"><h4>{{ current_soiltemp }}&deg;</h4><div>Soil Temp</div></div>
+		  <div class="card-header text-right"><h4>{{ current_soiltemp }}&deg;</h4><div>12" Soil Temp</div></div>
             <div class="card-body text-dark">
               <p class="card-text"><p class="card-text"><!--begin chart-->
 <div class="chart-container">
 
-<canvas id="myChart2" height="300"></canvas>
+<canvas id="myChart2" height="200"></canvas>
             <script>
 var ctx = document.getElementById('myChart2').getContext('2d');
 var myChart = new Chart(ctx, {
@@ -210,36 +188,11 @@ var myChart = new Chart(ctx, {
                                 }],
                                 xAxes:[{display: false
                                 }]
-                                },
+        		}
 
 
-       plugins: {
-            zoom: {
-                // Container for pan options
-                pan: {
-                    // Boolean to enable panning
-                    enabled: true,
-
-                    // Panning directions. Remove the appropriate direction to disable
-                    // Eg. 'y' would only allow panning in the y direction
-                    mode: 'xy'
-                },
-
-                // Container for zoom options
-                zoom: {
-                    // Boolean to enable zooming
-                    enabled: true,
-
-                    // Zooming directions. Remove the appropriate direction to disable
-                    // Eg. 'y' would only allow zooming in the y direction
-                    mode: 'xy',
-                }
-            }
-        }
-
-
-    }
-});
+    		}
+	});
 
             </script>
         </div>
@@ -252,14 +205,12 @@ var myChart = new Chart(ctx, {
 
 
         <div class="col-sm-4">
-
-
           <div class="card border-dark mb-3">
-		  <div class="card-header text-right"><h4>134&deg;</h4><div>Dryer Temp</div></div>
+		  <div class="card-header text-right"><h4>134&deg;</h4>Dryer Temp</div>
             <div class="card-body text-dark">
               <p class="card-text">
 
-                <canvas id="dryer" height="340"></canvas>
+                <canvas id="dryer" height="200"></canvas>
                 <script>
                 var ctx = document.getElementById('dryer');
                 var dryer = new Chart(ctx, {
@@ -305,94 +256,60 @@ var myChart = new Chart(ctx, {
 
 
       </div>
+	  <!-- end column-->
 
-    </div>
+    </div><!--end row-->
 
 
-      <div class="row">
-        <div class="col-md-4">
+	<div class="row">
+	
+		<div class="col-sm-4">
           <div class="card border-dark mb-3">
-		  <div class="card-header text-right"><h4>{{current_sensor1}}&deg;</h4><div>Hot Tub</div></div>
+		  <div class="card-header"><h4><i class="fas fa-thermometer-quarter"></i>&nbsp;&nbsp;{{ current_sensor1 }}&deg;</h4><div class="text-left">Hot Tub avg. {{avg}}</div></div>
             <div class="card-body text-dark">
               <p class="card-text">
-                <!--begin chart-->
-                <div class="chart-container">
 
-                <canvas id="sense1" height="300"></canvas>
+                <canvas id="tub" height="150"></canvas>
                 <script>
-                var ctx = document.getElementById('sense1').getContext('2d');
-                var sense1 = new Chart(ctx, {
-                type: 'bar',
-                data: {
-
-                labels: [1] ,
-
-                datasets: [
-                {
-                label: 'Hot Tub',
-                fill: false,
-                data: [ {{ current_sensor1 }} ],
-                backgroundColor: 'grey',
-                borderColor: "grey"
-                }
-                ]
-                },
-                  options: {
-                          legend:{
-                                  display: true},
-                  responsive: true,
-                          scales: {
-                                  yAxes: [{
-                                          ticks: {
-                                          beginAtZero: false
-                                          }
-                                  }],
-                                  xAxes:[{display: false
-                                  }]
-                                  },
-
-
-                plugins: {
-                zoom: {
-                  // Container for pan options
-                  pan: {
-                      // Boolean to enable panning
-                      enabled: true,
-
-                      // Panning directions. Remove the appropriate direction to disable
-                      // Eg. 'y' would only allow panning in the y direction
-                      mode: 'xy'
-                  },
-
-                  // Container for zoom options
-                  zoom: {
-                      // Boolean to enable zooming
-                      enabled: true,
-
-                      // Zooming directions. Remove the appropriate direction to disable
-                      // Eg. 'y' would only allow zooming in the y direction
-                      mode: 'xy',
-                  }
-                }
-                }
-
-
-                }
+                var ctx = document.getElementById('tub');
+                var tub = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+			    labels: [{% for date in dates %}'{{ date }}',{% endfor %}],
+			    datasets: [{
+                        label: 'Temperature',
+			fill: 'false',
+			data: [{% for sensor in sensor1 %}{{ sensor }},{% endfor %}],
+                            backgroundColor: 'blue',
+                            borderColor: 'blue',
+                            borderWidth: .4
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                 beginAtZero: true   
+                                }
+                            }],
+			xAxes:[{display: false
+			}]
+                        }
+                    }
                 });
-
                 </script>
-                </div>
-                <!--end chart-->
-
               </p>
             </div>
           </div>
 
-  </div>
 
-
+      </div>
+	  <!-- end column-->
+	
+	
+	
         <div class="col-md-8">
-                    <div class="card text-center">
+             <div class="card text-center">
                   <div class="card-header">
                     All Sensors
                   </div>
@@ -441,96 +358,15 @@ var myChart = new Chart(ctx, {
                       </script>
 
                     </p>
-
-                  </div>
-                </div>
-              </div>
-      </div>
-
-      <div class="row">
-        <div class="col-sm-4">
-          <!--begin card and chart-->
-          <div class="card border-dark mb-3">
-      <div class="card-header text-right"><h4>{{ current_sensor1 }}&deg;</h4><div>Hot Tub</div></div>
-            <div class="card-body text-dark">
-              <p class="card-text"><!--begin chart-->
-<div class="chart-container">
-<canvas id="sensor1Line" height="300"></canvas>
-            <script>
-var ctx = document.getElementById('sensor1Line').getContext('2d');
-var sensor1Line = new Chart(ctx, {
-    type: 'line',
-    data: {
-        labels: [{% for date in dates %}'{{ date }}',{% endfor %}] ,
-
-        datasets: [
-        {
-            label: 'Hot Tub',
-            fill: false,
-            data: [{% for sensor in sensor1 %}{{ sensor }},{% endfor %}],
-            backgroundColor: 'orange',
-                    borderColor: "orange"
-        }
-        ]
-    },
-                options: {
-    responsive: true,
-    spanGaps: true,
-            scales: {
-                  yAxes: [{
-                          ticks: {
-                          beginAtZero: false
-                      }
-                  }],
-        xAxes:[{display: false
-        }]
-              },
-
-       plugins: {
-            zoom: {
-                // Container for pan options
-                pan: {
-                    // Boolean to enable panning
-                    enabled: true,
-
-                    // Panning directions. Remove the appropriate direction to disable
-                    // Eg. 'y' would only allow panning in the y direction
-                    mode: 'xy'
-                },
-
-                // Container for zoom options
-                zoom: {
-                    // Boolean to enable zooming
-                    enabled: true,
-
-                    // Zooming directions. Remove the appropriate direction to disable
-                    // Eg. 'y' would only allow zooming in the y direction
-                    mode: 'xy',
-                }
-            }
-        }
-
-
-    }
-});
-
-            </script>
-        </div>
-    <!--end chart--></p>
-            </div>
-          </div><!--end card-->
-
-
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
 
-    </div>
-
-
-  </form>
 
 
 
-  <!--<div id="footer"></div>-->
 
 </body>
 
