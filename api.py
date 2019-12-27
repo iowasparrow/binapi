@@ -69,7 +69,8 @@ def get_all(siteid):  # This returns all entries in the database into a dict and
 def get_average():
     conn = sqlite3.connect(database, check_same_thread=False)
     curs = conn.cursor()
-    sql = "SELECT avg(sensor1) FROM tbl_data"
+    #sql = "SELECT avg(sensor1) FROM tbl_data"
+    sql = "select avg(sensor1) from(select sensor1 from tbl_data Order By timestamp desc limit 10)"
     # we have to change site id to a list because when we get to double digits it thinks we are passing in a list of characters.
     curs.execute(sql)
     data = curs.fetchall()
