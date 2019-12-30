@@ -148,6 +148,7 @@ var myChart = new Chart(ctx, {
     	    backgroundColor: 'green',
 		    borderColor: "green"
         },
+
         {
             label: 'Soil Temp',
             fill: false,
@@ -155,13 +156,23 @@ var myChart = new Chart(ctx, {
 	    backgroundColor: "orange",
 	    borderColor: "orange"
         },
+
 	{
-	label: 'Sensor 1',
+	label: 'Hot Tub',
 	fill: false,
 	data: [{% for sensor in sensor1 %}{{ sensor }},{% endfor %}],
 		backgroundColor: 'blue',
 		borderColor: "blue"
-	}
+	},
+	
+	{
+        label: 'Cat House',
+        fill: false,
+        data: [{% for sensor in sensor2 %}{{ sensor }},{% endfor %}],
+                backgroundColor: 'red',
+                borderColor: "red"
+        },
+
 	]
     },
 		options: {

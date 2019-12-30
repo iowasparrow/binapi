@@ -1,3 +1,4 @@
 # Project exclude paths
 .venv/
 /venv/
+check_lowtemp.py

@@ -16,6 +16,56 @@ dict = {}
 test = {}
 
 
+##############
+@app.route('/api/download', methods=['GET'])
+def download():  # This returns all entries in the database into a dict and then converts to json.
+    conn = sqlite3.connect(database, check_same_thread=False)
+    curs = conn.cursor()
+    sql = "SELECT * FROM tbl_data WHERE siteid  = 1 ORDER BY timestamp DESC"
+    # we have to change site id to a list because when we get to double digits it thinks we are passing in a list of characters.
+    #curs.execute(sql, [siteid])
+    curs.execute(sql)
+    data = curs.fetchall()
+    dates = []
+    temps = []
+    # siteids = []
+    soiltemps = []
+    sensor1 = []
+    sensor2 = []
+    # sensor3 = []
+    # sensor4 = []
+    # sensor5 = []
+    # sensor6 = []
+    for row in reversed(data):
+        dates.append(row[0])
+        temps.append(row[1])
+        #siteids.append(row[2])
+        soiltemps.append(row[3])
+         #sensor1.append(row[4])
+        if row[4] == None:
+            #convert None to null so the chart is happy
+            sensor1.append('null')
+        elif row[4] == 0:
+            sensor1.append('null')
+        else:
+            sensor1.append(row[4])
+        sensor2.append(row[5])
+        # sensor3append(row[6])
+        # sensor4.append(row[7])
+        # sensor5.append(row[8])
+        # sensor6.append(row[9])
+
+        dict[row[0]] = {'date': row[0], 'temp': row[1], 'soiltemps':row[3] ,'sensor1': row[4], 'sensor2': row[5]}
+    conn.close()
+    #print(dict)
+    #return dates, temps, soiltemps, sensor1, sensor2
+    return jsonify({'data': dict})
+    
+
+
+#############
+
+
 @app.route('/api/v1.0/tasks', methods=['GET'])
 def get_all(siteid):  # This returns all entries in the database into a dict and then converts to json.
     conn = sqlite3.connect(database, check_same_thread=False)
@@ -52,7 +102,14 @@ def get_all(siteid):  # This returns all entries in the database into a dict and
         else:
             sensor1.append(row[4])
 
-        sensor2.append(row[5])
+        if row[5] == None:
+            #convert None to null so the chart is happy
+            sensor2.append('null')
+        elif row[5] == 0:
+            sensor2.append('null')
+        else:
+            sensor2.append(row[5])
+
         # sensor3append(row[6])
         # sensor4.append(row[7])
         # sensor5.append(row[8])
@@ -69,14 +126,12 @@ def get_all(siteid):  # This returns all entries in the database into a dict and
 def get_average():
     conn = sqlite3.connect(database, check_same_thread=False)
     curs = conn.cursor()
-    #sql = "SELECT avg(sensor1) FROM tbl_data"
-    sql = "select avg(sensor1) from(select sensor1 from tbl_data Order By timestamp desc limit 10)"
-    # we have to change site id to a list because when we get to double digits it thinks we are passing in a list of characters.
+    sql = "select avg(sensor1) from(select sensor1 from tbl_data Order By timestamp desc limit 7)"
+    # we have to change site id in the execute function to a list because when we get to double digits it thinks we are passing in a list of characters.
     curs.execute(sql)
     data = curs.fetchall()
     x = data[0]
     y= round(x[0],2)
-
     return y
 
 
@@ -113,9 +168,11 @@ def get_current_data():  # get current values for display on dashboard
         current_temp = row[1]
         current_soiltemp = row[3]
         current_sensor1 = row[4]
+        current_sensor2 = row[5]
     conn.close()
     temp_difference, temp_week_ago = check_rapid_rise(current_temp)
-    return current_time, current_temp, temp_difference, temp_week_ago, current_soiltemp, current_sensor1
+    print("Current Sensor 2= " + str(current_sensor2))
+    return current_time, current_temp, temp_difference, temp_week_ago, current_soiltemp, current_sensor1, current_sensor2
 
 
 @app.route('/linechart')
@@ -127,7 +184,7 @@ def linechart():
     siteid=mycookie   
     #  print(dict)
     # return jsonify({'data': dict})
-    current_time, current_temp, temp_difference, current_soiltemp, temp_week_ago, current_sensor1 = get_current_data()
+    current_time, current_temp, temp_difference, current_soiltemp, temp_week_ago, current_sensor1, current_sensor2 = get_current_data()
     dates, temps, soiltemps, sensor1, sensor2 = get_all(siteid)
     return render_template('index.html', siteid=siteid, temp_week_ago=temp_week_ago, temp_difference=temp_difference,temps=temps, dates=dates, soiltemps=soiltemps, current_soiltemp=current_soiltemp ,sensor1=sensor1,sensor2=sensor2, current_time=current_time, current_temp=current_temp)
 
@@ -173,9 +230,10 @@ def dashboard():
     #  print(dict)
     # return jsonify({'data': dict})
     avg = get_average()
-    current_time, current_temp, temp_difference, temp_week_ago, current_soiltemp, current_sensor1 = get_current_data()
+    current_time, current_temp, temp_difference, temp_week_ago, current_soiltemp, current_sensor1, current_sensor2 = get_current_data()
+    #check_rapid_rise(current_temp)
     dates, temps, soiltemps, sensor1, sensor2 = get_all(siteid)
-    return render_template('dashboard.html', siteid=siteid, avg=avg, temp_week_ago=temp_week_ago, mycookie=mycookie, temp_difference=temp_difference,temps=temps, dates=dates, soiltemps=soiltemps ,sensor1=sensor1, current_sensor1=current_sensor1, sensor2=sensor2, current_time=current_time, current_temp=current_temp, current_soiltemp=current_soiltemp)
+    return render_template('dashboard.html', siteid=siteid, avg=avg, temp_week_ago=temp_week_ago, mycookie=mycookie, temp_difference=temp_difference,temps=temps, dates=dates, soiltemps=soiltemps ,sensor1=sensor1, current_sensor1=current_sensor1, current_sensor2=current_sensor2, sensor2=sensor2, current_time=current_time, current_temp=current_temp, current_soiltemp=current_soiltemp)
 
 
 @app.route('/delete-cookie/')
@@ -218,6 +276,7 @@ def create_task():
     print(temp)
     print(siteid)
     print(soiltemp)
+    print("sensor2= " + str(sensor2))
     return jsonify({'task': task}), 201
 
     # return temp, siteid
@@ -233,7 +292,7 @@ def insert_data(temp, siteid, soiltemp, sensor1, sensor2):
     #print("SENSOR1=:")
     #print(sensor1)
     curs.execute("INSERT INTO tbl_data values((?),(?),(?),(?),(?),(?),(?),(?),(?),(?))",
-                 (timestamp, temp, siteid, soiltemp, sensor1, None, None, None, None, None))
+                 (timestamp, temp, siteid, soiltemp, sensor1, sensor2, None, None, None, None))
     conn.commit()
     conn.close()
 
