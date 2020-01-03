@@ -133,14 +133,16 @@ def get_average():
     return y
 
 
-def check_rapid_rise(current_temp):
+def check_rapid_rise(current_temp, x):
     conn = sqlite3.connect(database, check_same_thread=False)
     curs = conn.cursor()
     temp_week_ago = 0
     for row in curs.execute(
             "SELECT * FROM tbl_data WHERE timestamp BETWEEN datetime('now', '-8 days') AND datetime('now', '-6 days') LIMIT 1;"):
-        temp_week_ago = row[1]
+        temp_week_ago = row[x]
     conn.close()
+    if temp_week_ago == None:
+            temp_week_ago = 0
     temp_difference = current_temp - temp_week_ago
     print('temp difference=', temp_difference)
     if temp_difference >= 3 and current_temp > 32:
@@ -168,9 +170,12 @@ def get_current_data():  # get current values for display on dashboard
         current_sensor1 = row[4]
         current_sensor2 = row[5]
     conn.close()
-    temp_difference, temp_week_ago = check_rapid_rise(current_temp)
+    temp_difference, temp_week_ago = check_rapid_rise(current_temp, 1)
+    temp_difference1, temp_week_ago1 = check_rapid_rise(current_sensor1, 4)
+    temp_difference2, temp_week_ago2 = check_rapid_rise(current_sensor2, 5)
+    
     print("Current Sensor 2= " + str(current_sensor2))
-    return current_time, current_temp, temp_difference, temp_week_ago, current_soiltemp, current_sensor1, current_sensor2
+    return current_time, current_temp, temp_difference, temp_week_ago, current_soiltemp, current_sensor1, current_sensor2, temp_week_ago1, temp_week_ago2, temp_difference1, temp_difference2
 
 
 @app.route('/linechart')
@@ -182,9 +187,11 @@ def linechart():
     siteid=mycookie   
     #  print(dict)
     # return jsonify({'data': dict})
-    current_time, current_temp, temp_difference, current_soiltemp, temp_week_ago, current_sensor1, current_sensor2 = get_current_data()
+    current_time, current_temp, temp_difference, current_soiltemp, temp_week_ago, current_sensor1, current_sensor2, temp_week_ago1, temp_week_ago2, temp_difference1, temp_difference2 = get_current_data()
+    
     dates, temps, soiltemps, sensor1, sensor2 = get_all(siteid)
-    return render_template('index.html', siteid=siteid, temp_week_ago=temp_week_ago, temp_difference=temp_difference,temps=temps, dates=dates, soiltemps=soiltemps, current_soiltemp=current_soiltemp ,sensor1=sensor1,sensor2=sensor2, current_time=current_time, current_temp=current_temp)
+    
+    return render_template('index.html', siteid=siteid, temp_week_ago=temp_week_ago, temp_difference=temp_difference, temp_difference1=temp_difference1, temp_difference2=temp_difference2, temps=temps, dates=dates, soiltemps=soiltemps, current_soiltemp=current_soiltemp ,sensor1=sensor1,sensor2=sensor2, current_sensor1=current_sensor1, current_sensor2=current_sensor2, current_time=current_time, current_temp=current_temp, temp_week_ago1=temp_week_ago1, temp_week_ago2=temp_week_ago2)
 
 
 @app.route('/login', methods=['POST', 'GET'])
@@ -228,10 +235,10 @@ def dashboard():
     #  print(dict)
     # return jsonify({'data': dict})
     avg = get_average()
-    current_time, current_temp, temp_difference, temp_week_ago, current_soiltemp, current_sensor1, current_sensor2 = get_current_data()
-    #check_rapid_rise(current_temp)
+    current_time, current_temp, temp_difference, current_soiltemp, temp_week_ago, current_sensor1, current_sensor2, temp_week_ago1, temp_week_ago2, temp_difference1, temp_difference2 = get_current_data()
+
     dates, temps, soiltemps, sensor1, sensor2 = get_all(siteid)
-    return render_template('dashboard.html', siteid=siteid, avg=avg, temp_week_ago=temp_week_ago, mycookie=mycookie, temp_difference=temp_difference,temps=temps, dates=dates, soiltemps=soiltemps ,sensor1=sensor1, current_sensor1=current_sensor1, current_sensor2=current_sensor2, sensor2=sensor2, current_time=current_time, current_temp=current_temp, current_soiltemp=current_soiltemp)
+    return render_template('dashboard.html', siteid=siteid, avg=avg, temp_week_ago=temp_week_ago, mycookie=mycookie, temp_difference=temp_difference,temps=temps, dates=dates, soiltemps=soiltemps ,sensor1=sensor1, current_sensor1=current_sensor1, current_sensor2=current_sensor2, sensor2=sensor2, current_time=current_time, current_temp=current_temp, current_soiltemp=current_soiltemp, temp_week_ago1=temp_week_ago1, temp_week_ago2=temp_week_ago2 )
 
 
 @app.route('/delete-cookie/')

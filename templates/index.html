@@ -8,131 +8,81 @@
     <script src="{{ url_for('static', filename='jquery-3.4.1.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
     <script src="{{ url_for('static', filename='popper.min.js') }}"></script>
-
-   
     <!--zoom plugin-->
     <script src="{{ url_for('static', filename='chartzoom/hammerjs2.0.8') }}"></script>
     <script src="{{ url_for('static', filename='chartzoom/chartjs-plugin-zoom0.7.4') }}"></script>
     <!--end zoom plugin-->
- 
-    
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
 
 
  <script>
-
   $( function() {
 	$("#header").load("http://bintemp.com/nav.html");
 	$("#footer").load("footer.html");
 } );
   </script>
 
-  <style>
-#chartCont {
+<style>
+	#chartCont {
 	min-height:500px;
-}
+	}
 </style>
-
 </head>
+
 <body>
 <div id="header"></div>
 
- <ul class="nav nav-tabs">
+
+<!--begin tab-->
+  <ul class="nav nav-tabs">
   <li class="nav-item">
-	  <a class="nav-link" href="dashboard">Dashboard</a>
+    <a class="nav-link" href="dashboard">Dashboard</a>
   </li>
   <li class="nav-item">
-          <a class="nav-link active" href="linechart">Line Chart</a>
+          <a class="nav-link active" href="#">Line Chart</a>
   </li>
-   <li class="nav-item">
+  <li class="nav-item">
           <a class="nav-link disabled" href="#">SiteID:{{siteid}}</a>
   </li>
+</ul>
 
- </ul>
+<!--end tabs-->
 
 
 <div class="container">
-    <h4 class="text-center">Bin Temperature Monitoring System</h4>
+    <div class="container">
+	<div class="row">
 
+	    <div class="col">
+	    </div>
+
+	    <div class="col">
+	    Last Sample Time= {{ current_time }}
+	    </div>
+
+	</div>
+    </div>
 
 
     <!--Temp Alarm={{ temp_alarm }}<br>-->
 
     {%if temp_alarm == "true" %}
-    <div class="alert alert-danger text-center">Rapid Rise Detected.<br> At least 3&#8457 in one week at 32 or
+    <div class="alert alert-danger text-center">Rapid Rise Detected.<br> At least 3&deg; in one week at 32 or
         below.<br> Check bin.
-        <form method="post" action="/bin_temperature">
+        <form method="post" action="/bin_temperature/">
             <input class="btn btn-secondary" type="submit" name="clear_alarm" value="Clear Alarm"><br>
         </form>
     </div>
     {% endif %}
 
 
-    <div class="container">
-        <div class="row">
-            <div class="col-sm">
-                Current temp= {{ current_temp }} &#8457;<br>
-                {% if current_temp > 40 %}
-                <span class="alert-warning">Temp is above 40 &#8457;</span><br>
-                {% endif %}
-                {% if current_temp > 50 %}
-                <span class="alert-danger">Temp is above 50 &#8457;</span><br>
-                {% endif %}
-                {% if current_temp > 60 %}
-                <span class="alert-danger">Temp is above 60 &#8457;</span><br>
-                {% endif %}
-                {% if current_temp > 70 %}
-                <span class="alert-danger">Temp is above 70 &#8457;</span><br>
-                {% endif %}
-                {% if current_temp < 32 %}
-                <span class="alert-success">Temp is below 32, frozen.</span><br>
-                {% endif %}
-                Temp 1 week ago= {{ temp_week_ago }}<br>
 
-                {% if current_temp > temp_week_ago %}
-                Temp increase from 1 week ago = {{ temp_difference }}<br>
-                {% else %}
-                Temp decrease from 1 week ago = {{ temp_difference }}<br>
-                {% endif %}
-
-                Last Sample Time = {{ current_time }} <br>
-            </div>
-            <div class="col-sm">
-                {% if pin_status == True %}
-                <span class="badge badge-success">Fan On</span>
-                {% else %}
-                <span class="badge badge-danger">Fan Off</span>
-                {% endif %}
-		{% if current_soiltemp - current_temp >= 20 and current_soiltemp > 30 %}
-		<p>Air is 20 degrees cooler than the corn, and the grain is above 30, turn on the fan.</p>
-		{% else %}
-			<p>Fan is not recommended now.</p>
-		{% endif %}
-
-            </div>
-            <div class="col-sm">
-                {% if server_up == "yes" %}
-                <span class="badge badge-success">Connected To Server</span>
-                {% else %}
-                <span class="badge badge-danger">Server Disconnected</span>
-                {% endif %}
-            </div>
-        </div>
-
-
-        <!--Number of Data Points= {{ rows }}<br>-->
-    </div>
-
-
-
-    <div id="chartCont" class="container">
-        <div class="row">
 <!--begin chart-->
-<div class="chart-container" style="position: relative; height:70vh; width:90vw">
+<div class="chart-container">
 
-<canvas id="myChart" height="300"></canvas>
-            <script>
+<canvas id="myChart" height="250"></canvas>
+<script>
 var ctx = document.getElementById('myChart').getContext('2d');
 var myChart = new Chart(ctx, {
     type: 'line',
@@ -148,7 +98,6 @@ var myChart = new Chart(ctx, {
     	    backgroundColor: 'green',
 		    borderColor: "green"
         },
-
         {
             label: 'Soil Temp',
             fill: false,
@@ -156,26 +105,26 @@ var myChart = new Chart(ctx, {
 	    backgroundColor: "orange",
 	    borderColor: "orange"
         },
-
 	{
-	label: 'Hot Tub',
+	label: 'Sensor 1',
 	fill: false,
+	spanGaps: true,
 	data: [{% for sensor in sensor1 %}{{ sensor }},{% endfor %}],
 		backgroundColor: 'blue',
 		borderColor: "blue"
 	},
-	
 	{
-        label: 'Cat House',
+        label: 'Sensor 2',
         fill: false,
+	spanGaps: true,
         data: [{% for sensor in sensor2 %}{{ sensor }},{% endfor %}],
                 backgroundColor: 'red',
-                borderColor: "red"
-        },
+                borderColor: 'red'
+        }
 
 	]
     },
-		options: {
+	options: {
 	responsive: true,
 	scales: {
             yAxes: [{
@@ -185,12 +134,6 @@ var myChart = new Chart(ctx, {
             }]
         },
 
-
-
-
-
-
-
        plugins: {
             zoom: {
                 // Container for pan options
@@ -198,7 +141,7 @@ var myChart = new Chart(ctx, {
                     // Boolean to enable panning
                     enabled: true,
 
-                    // Panning directions. Remove the appropriate direction to disable 
+                    // Panning directions. Remove the appropriate direction to disable
                     // Eg. 'y' would only allow panning in the y direction
                     mode: 'xy'
                 },
@@ -208,27 +151,83 @@ var myChart = new Chart(ctx, {
                     // Boolean to enable zooming
                     enabled: true,
 
-                    // Zooming directions. Remove the appropriate direction to disable 
+                    // Zooming directions. Remove the appropriate direction to disable
                     // Eg. 'y' would only allow zooming in the y direction
                     mode: 'xy',
                 }
             }
         }
+
+
+
     }
 });
 
             </script>
         </div>
-    <!--end chart-->
-            <div class="col-sm">
-            </div>
-        </div>
-    </div>
-
-
-
-
 </div>
+<br><hr>
 
+<div class="container">
+        <div class="row">
+            <div class="col-sm">
+		        <div class="card">
+              <div class="text-center text-white" style="background-color: green">Air Temp</div>
+                <div class="card-body">
+                <p class="card-text">
+                        Current temp= {{ current_temp }} &#8457;<br>
+                        Temp 1 week ago= {{ temp_week_ago }}<br>
+
+                        {% if current_temp > temp_week_ago %}
+                                Temp increase from 1 week ago = {{ temp_difference }}<br>
+                        {% else %}
+                                Temp decrease from 1 week ago = {{ temp_difference }}<br>
+                        {% endif %}
+                </p>
+                </div>
+        </div>
+            </div>
+
+            <div class="col-sm">
+		        <div class="card">
+              <div class="text-center text-white" style="background-color: blue">Sensor 1 - Hot Tub</div>
+                <div class="card-body">
+                <p class="card-text">
+                        Current temp= {{ current_sensor1 }} &#8457;<br>
+                        Temp 1 week ago= {{ temp_week_ago1 }}<br>
+
+                        {% if current_sensor1 > temp_week_ago %}
+                                Temp increase from 1 week ago = {{ temp_difference1 }}<br>
+                        {% else %}
+                                Temp decrease from 1 week ago = {{ temp_difference1 }}<br>
+                        {% endif %}
+                </p>
+                </div>
+        </div>
+	    </div>
+
+            <div class="col-sm">
+
+	<div class="card">
+    <div class="text-center text-white" style="background-color: red">Sensor 2 - Cat House</div>
+  		<div class="card-body">
+    		<p class="card-text">
+   	        	Current temp= {{ current_sensor2 }} &#8457;<br>
+               		Temp 1 week ago= {{ temp_week_ago2 }}<br>
+
+                	{% if current_sensor2 > temp_week_ago2 %}
+                		Temp increase from 1 week ago = {{ temp_difference2 }}<br>
+                	{% else %}
+				Temp decrease from 1 week ago = {{ temp_difference2 }}<br>
+                	{% endif %}
+    		</p>
+  		</div>
+	</div>
+
+	    </div>
+        </div>
+
+    </div>
+<br>
 </body>
 </html>
