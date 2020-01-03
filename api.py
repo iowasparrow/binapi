@@ -102,10 +102,8 @@ def get_all(siteid):  # This returns all entries in the database into a dict and
         else:
             sensor1.append(row[4])
 
-        if row[5] == None:
+        if row[5] == None or row[5] == 0 or row[5] == 185:
             #convert None to null so the chart is happy
-            sensor2.append('null')
-        elif row[5] == 0:
             sensor2.append('null')
         else:
             sensor2.append(row[5])
