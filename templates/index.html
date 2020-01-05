@@ -11,6 +11,20 @@
     <!--zoom plugin-->
     <script src="{{ url_for('static', filename='chartzoom/hammerjs2.0.8') }}"></script>
     <script src="{{ url_for('static', filename='chartzoom/chartjs-plugin-zoom0.7.4') }}"></script>
+
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    
+    <script>
+  $( function() {
+	  $( "#aStartDate" ).datepicker({
+	  	dateFormat: "yy-mm-dd"
+	  });
+	  $( "#aEndDate" ).datepicker({
+                dateFormat: "yy-mm-dd"
+          });
+  } );
+  </script>
     <!--end zoom plugin-->
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -43,7 +57,7 @@
           <a class="nav-link active" href="#">Line Chart</a>
   </li>
   <li class="nav-item">
-          <a class="nav-link disabled" href="#">SiteID:{{siteid}}</a>
+          <a class="nav-link disabled" href="#">SiteID: {{ siteid }} </a>
   </li>
 </ul>
 
@@ -55,10 +69,20 @@
 	<div class="row">
 
 	    <div class="col">
+		<form action="/binapi/linechart" method="post">
+		<div class="form-group">
+			<!--<label for="start_date">Start Date</label>-->
+			<input type="text" autocomplete="off" class="form-control" id="aStartDate" placeholder="Start Date" name="aStartDate">
+			<input type="text" autocomplete="off" class="form-control" id="aEndDate" placeholder="End Date" name="aEndDate">
+		</div>
+		<button type="submit" class="btn btn-primary">Submit</button>
+  		</form>
 	    </div>
 
 	    <div class="col">
-	    Last Sample Time= {{ current_time }}
+		Last Sample Time= {{ shortdate }}<br>
+		Showing Data From {{ start_date }} to somedate
+	    <br>
 	    </div>
 
 	</div>
@@ -168,66 +192,7 @@ var myChart = new Chart(ctx, {
 </div>
 <br><hr>
 
-<div class="container">
-        <div class="row">
-            <div class="col-sm">
-		        <div class="card">
-              <div class="text-center text-white" style="background-color: green">Air Temp</div>
-                <div class="card-body">
-                <p class="card-text">
-                        Current temp= {{ current_temp }} &#8457;<br>
-                        Temp 1 week ago= {{ temp_week_ago }}<br>
-
-                        {% if current_temp > temp_week_ago %}
-                                Temp increase from 1 week ago = {{ temp_difference }}<br>
-                        {% else %}
-                                Temp decrease from 1 week ago = {{ temp_difference }}<br>
-                        {% endif %}
-                </p>
-                </div>
-        </div>
-            </div>
-
-            <div class="col-sm">
-		        <div class="card">
-              <div class="text-center text-white" style="background-color: blue">Sensor 1 - Hot Tub</div>
-                <div class="card-body">
-                <p class="card-text">
-                        Current temp= {{ current_sensor1 }} &#8457;<br>
-                        Temp 1 week ago= {{ temp_week_ago1 }}<br>
-
-                        {% if current_sensor1 > temp_week_ago %}
-                                Temp increase from 1 week ago = {{ temp_difference1 }}<br>
-                        {% else %}
-                                Temp decrease from 1 week ago = {{ temp_difference1 }}<br>
-                        {% endif %}
-                </p>
-                </div>
-        </div>
-	    </div>
-
-            <div class="col-sm">
-
-	<div class="card">
-    <div class="text-center text-white" style="background-color: red">Sensor 2 - Cat House</div>
-  		<div class="card-body">
-    		<p class="card-text">
-   	        	Current temp= {{ current_sensor2 }} &#8457;<br>
-               		Temp 1 week ago= {{ temp_week_ago2 }}<br>
-
-                	{% if current_sensor2 > temp_week_ago2 %}
-                		Temp increase from 1 week ago = {{ temp_difference2 }}<br>
-                	{% else %}
-				Temp decrease from 1 week ago = {{ temp_difference2 }}<br>
-                	{% endif %}
-    		</p>
-  		</div>
-	</div>
-
-	    </div>
-        </div>
 
     </div>
-<br>
 </body>
 </html>

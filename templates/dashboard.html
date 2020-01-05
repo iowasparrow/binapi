@@ -84,220 +84,86 @@
 
 
 
-    <br>
-    <center>
-      <h3>Sensor Dashboard</h3><small><span class="text-muted">View any sensor from any smartphone or computer using IoT technology.</span></small>
-    </center>
-
-    <!--<div class="container-fluid" style="background:darkgrey;"><p><h3 style="text-align:center">MM/DD/YYYY</p></h3></div>-->
-
-    <br>
-
-    <div class="container">
-      <div class="row">
-        <div class="col-sm-4">
-          <!--begin card and chart-->
-          <div class="card border-dark mb-3">
-		  <div class="card-header text-right"><h4>{{ current_temp }}&deg;</h4><div>Air Temp</div></div>
-            <div class="card-body text-dark">
-              <p class="card-text"><!--begin chart-->
-<div class="chart-container">
-<canvas id="myChart" height="200"></canvas>
-            <script>
-var ctx = document.getElementById('myChart').getContext('2d');
-var myChart = new Chart(ctx, {
-    type: 'line',
-    data: {
-        labels: [{% for date in dates %}'{{ date }}',{% endfor %}] ,
-
-        datasets: [
-        {
-            label: 'Air Temp',
-            fill: false,
-            data: [{% for temp in temps %}{{ temp }},{% endfor %}],
-            backgroundColor: 'green',
-            borderColor: 'green'
-        }
-        ]
-    },
-                options: {
-		responsive: true,
-        		scales: {
-            			yAxes: [{
-                    			ticks: {
-                    			beginAtZero: false
-                			}
-            			}],
-				xAxes:[{display: false
-				}]
-       				},
-    }
-});
-
-            </script>
-        </div>
-    <!--end chart--></p>
-            </div>
-          </div><!--end card-->
 
 
-</div>
-
-        <div class="col-sm-4">
-
-
-          <div class="card border-dark mb-3">
-		  <div class="card-header text-right"><h4>{{ current_soiltemp }}&deg;</h4><div>12" Soil Temp</div></div>
-            <div class="card-body text-dark">
-              <p class="card-text"><p class="card-text"><!--begin chart-->
-<div class="chart-container">
-
-<canvas id="myChart2" height="200"></canvas>
-            <script>
-var ctx = document.getElementById('myChart2').getContext('2d');
-var myChart = new Chart(ctx, {
-    type: 'line',
-    data: {
-
-        labels: [{% for date in dates %}'{{ date }}',{% endfor %}] ,
-
-        datasets: [
-        {
-	    label: 'Soil Temp',
-            fill: false,
-            data: [{% for soil in soiltemps %}{{ soil }},{% endfor %}],
-            backgroundColor: 'orange',
-            borderColor: "orange"
-        }
-        ]
-    },
-                options: {
-                        legend:{
-                                display: true},
-                responsive: true,
-                        scales: {
-                                yAxes: [{
-                                        ticks: {
-                                        beginAtZero: true
-                                        }
-                                }],
-                                xAxes:[{display: false
-                                }]
-        		}
-
-
-    		}
-	});
-
-            </script>
-        </div>
-    <!--end chart--></p>
-            </div>
-          </div>
-
-
-</div>
-
-<div class="col-sm-4">
-          <div class="card border-dark mb-3">
-                  <div class="card-header"><h4><i class="fas fa-thermometer-quarter"></i>&nbsp;&nbsp;{{ current_sensor2 }}&deg;</h4><div class="text-left">Cat House</div></div>
-            <div class="card-body text-dark">
-              <p class="card-text">
-
-                <canvas id="sensor2" height="150"></canvas>
-                <script>
-                var ctx = document.getElementById('sensor2');
-                var sensor2 = new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                            labels: [{% for date in dates %}'{{ date }}',{% endfor %}],
-                            datasets: [{
-                        label: 'Temperature',
-                        fill: 'false',
-                        data: [{% for sensor in sensor2 %}{{ sensor }},{% endfor %}],
-                            backgroundColor: 'red',
-                            borderColor: 'red'
-                        }]
-                    },
-                    options: {
-                        scales: {
-                            yAxes: [{
-                                ticks: {
-                                 beginAtZero: false
-                                }
-                            }],
-                        xAxes:[{display: false
-                        }]
-                        }
-                    }
-                });
-                </script>
-              </p>
-            </div>
-          </div>
-
-
-      </div>
-          <!-- end column-->
-
-
-    </div><!--end row-->
-
-
+<div class="container">
 	<div class="row">
-	
-		<div class="col-sm-4">
-          <div class="card border-dark mb-3">
-		  <div class="card-header"><h4><i class="fas fa-thermometer-quarter"></i>&nbsp;&nbsp;{{ current_sensor1 }}&deg;</h4><div class="text-left">Hot Tub avg. {{avg}}</div></div>
-            <div class="card-body text-dark">
-              <p class="card-text">
+		<div class="col">
+<div class="card text-white bg-primary mb-3" style="max-width: 18rem;">
+	<!--<div class="card-header">Header</div>-->
+  <div class="card-body">
+    <h5 class="card-title">Hot Tub</h5>
+    <p class="card-text"><h2><i class="fas fa-hot-tub"></i>&nbsp;&nbsp;{{ current_sensor1 }}&deg;</h2><div class="text-right">Avg. {{avg}}</div></p>
+  </div>
+</div>
+		</div>
+		<div class="col">
+<div class="card text-white bg-secondary mb-3" style="max-width: 18rem;">
+  <div class="card-body">
+    <h5 class="card-title">Soil Temp</h5>
+    <p class="card-text"><h2><i class="fas fa-seedling"></i>&nbsp;&nbsp;{{ current_soiltemp }}&deg;</h2><div class="text-right">12" Depth</div></p>
+  </div>
+</div>
+		</div>
+		<div class="col">
+<div class="card text-white bg-success mb-3" style="max-width: 18rem;">
+  <div class="card-body">
+    <h5 class="card-title">Air Temp</h5>
+    <p class="card-text"><h2><i class="fas fa-thermometer-quarter"></i>&nbsp;&nbsp;{{ current_temp }}&deg;</h2><div class="text-right"></div></p>
+  </div>
+</div>
+		</div>
+		<div class="col">
+<div class="card text-white bg-danger mb-3" style="max-width: 18rem;">
+  <div class="card-body">
+    <h5 class="card-title">Cat House</h5>
+    <p class="card-text"><h2><i class="fas fa-cat"></i>&nbsp;&nbsp;{{ current_sensor2 }}&deg;</h2><div class="text-right">Mimi</div></p>
+  </div>
+</div>
+		</div>
+	</div>
 
-                <canvas id="tub" height="150"></canvas>
-                <script>
-                var ctx = document.getElementById('tub');
-                var tub = new Chart(ctx, {
-                    type: 'line',
-                    data: {
-			    labels: [{% for date in dates %}'{{ date }}',{% endfor %}],
-			    datasets: [{
-                        label: 'Temperature',
-			fill: 'false',
-			data: [{% for sensor in sensor1 %}{{ sensor }},{% endfor %}],
-                            backgroundColor: 'blue',
-                            borderColor: 'blue',
-                            borderWidth: .4
-                        }]
-                    },
-                    options: {
-                        scales: {
-                            yAxes: [{
-                                ticks: {
-                                 beginAtZero: true   
-                                }
-                            }],
-			xAxes:[{display: false
-			}]
-                        }
-                    }
-                });
-                </script>
-              </p>
-            </div>
-          </div>
+	<hr>
+<div class="row">
+	<div class="col">
+<div class="card text-white bg-primary mb-3" style="max-width: 18rem;">
+  <div class="card-body">
+    <h5 class="card-title">Warning card title</h5>
+    <p class="card-text"></p>
+  </div>
+</div>
+	</div>
+	<div class="col">
+<div class="card text-white bg-primary mb-3" style="max-width: 18rem;">
+  <div class="card-body">
+    <h5 class="card-title">Info card title</h5>
+    <p class="card-text"></p>
+  </div>
+</div>
+	</div>
+	<div class="col">
+<div class="card text-white bg-primary mb-3" style="max-width: 18rem;">
+  <div class="card-body">
+    <h5 class="card-title">Light card title</h5>
+    <p class="card-text"></p>
+  </div>
+</div>
+	</div>
+	<div class="col">
+<div class="card text-white bg-primary mb-3" style="max-width: 18rem;">
+  <div class="card-body">
+    <h5 class="card-title">Dark card title</h5>
+    <p class="card-text"></p>
+  </div>
+</div>
+	</div>
+	</div>
+</div>
 
 
-      </div>
-	  <!-- end column-->
-	
-	
-	
-        <div class="col-md-8">
-             <div class="card text-center">
-                  <div class="card-header">
-                    All Sensors
-                  </div>
-                  <div class="card-body">
-                    <p class="card-text">
+
+<div class="container">
+
 
                       <canvas id="bin_bar" width="400" height="200"></canvas>
                       <script>
@@ -338,18 +204,9 @@ var myChart = new Chart(ctx, {
                               }
                           }
                       });
-                      </script>
+		      </script>
 
-                    </p>
-				</div>
-			</div>
-		</div>
-	</div>
 </div>
-
-
-
-
 
 </body>
 

@@ -67,12 +67,14 @@ def download():  # This returns all entries in the database into a dict and then
 
 
 @app.route('/api/v1.0/tasks', methods=['GET'])
-def get_all(siteid):  # This returns all entries in the database into a dict and then converts to json.
+def get_all(siteid, start_date='1900-01-01', end_date='2050-01-01'):  # This returns all entries in the database into a dict and then converts to json.
     conn = sqlite3.connect(database, check_same_thread=False)
     curs = conn.cursor()
-    sql = "SELECT * FROM tbl_data WHERE siteid  = ? ORDER BY timestamp DESC"
+    print("start date in getall function: " + start_date)
+    print("end date in getall function: " + end_date) 
+    sql = "SELECT * FROM tbl_data WHERE siteid  = ? AND timestamp >= ? AND timestamp <= ? ORDER BY timestamp DESC"
     # we have to change site id to a list because when we get to double digits it thinks we are passing in a list of characters.
-    curs.execute(sql, [siteid])
+    curs.execute(sql, [siteid, start_date, end_date])
     
     data = curs.fetchall()
     dates = []
@@ -86,7 +88,8 @@ def get_all(siteid):  # This returns all entries in the database into a dict and
     # sensor5 = []
     # sensor6 = []
     for row in reversed(data):
-        dates.append(row[0])
+        #dates.append(row[0])
+        dates.append(datetime.strptime(row[0], '%Y-%m-%d %H:%M:%S.%f').strftime('%m/%d/%Y %H:%M'))
         temps.append(row[1])
         #siteids.append(row[2])
         soiltemps.append(row[3])
@@ -124,7 +127,7 @@ def get_all(siteid):  # This returns all entries in the database into a dict and
 def get_average():
     conn = sqlite3.connect(database, check_same_thread=False)
     curs = conn.cursor()
-    sql = "select avg(sensor1) from(select sensor1 from tbl_data WHERE sensor1 <> 'None' AND sensor1 <> '0' Order By timestamp desc limit 7)"
+    sql = "select avg(sensor1) from(select sensor1 from tbl_data WHERE sensor1 <> 'None' AND sensor1 <> '0' Order By timestamp desc limit 20)"
     # we have to change site id in the execute function to a list because when we get to double digits it thinks we are passing in a list of characters.
     curs.execute(sql)
     data = curs.fetchall()
@@ -144,9 +147,9 @@ def check_rapid_rise(current_temp, x):
     if temp_week_ago == None:
             temp_week_ago = 0
     temp_difference = current_temp - temp_week_ago
-    print('temp difference=', temp_difference)
+    #print('temp difference=', temp_difference)
     if temp_difference >= 3 and current_temp > 32:
-        print("DANGER RAPID RISE DETECTED 3 degrees in one week at 32.")
+        #print("DANGER RAPID RISE DETECTED 3 degrees in one week at 32.")
         # set_temp_alarm('true')
         formatted_temp_difference = round(temp_difference, 1)
         return formatted_temp_difference, temp_week_ago
@@ -158,13 +161,14 @@ def check_rapid_rise(current_temp, x):
 def get_current_data():  # get current values for display on dashboard
     conn = sqlite3.connect(database, check_same_thread=False)
     curs = conn.cursor()
-    current_time = []
+    #current_time = []
     current_temp = []
     current_soiltemp = []
     current_sensor1 = []
     current_sensor2 = []
     for row in curs.execute("SELECT * FROM tbl_data ORDER BY timestamp DESC LIMIT 1"):
-        current_time = str(row[0])
+        #current_time = str(row[0])
+        current_time = row[0]
         current_temp = row[1]
         current_soiltemp = row[3]
         current_sensor1 = row[4]
@@ -173,25 +177,39 @@ def get_current_data():  # get current values for display on dashboard
     temp_difference, temp_week_ago = check_rapid_rise(current_temp, 1)
     temp_difference1, temp_week_ago1 = check_rapid_rise(current_sensor1, 4)
     temp_difference2, temp_week_ago2 = check_rapid_rise(current_sensor2, 5)
-    
-    print("Current Sensor 2= " + str(current_sensor2))
+    #newdate = datetime.strptime(current_time, '%Y-%m-%d %H:%M:%S.%f').strftime('%m/%d/%Y')
+
     return current_time, current_temp, temp_difference, temp_week_ago, current_soiltemp, current_sensor1, current_sensor2, temp_week_ago1, temp_week_ago2, temp_difference1, temp_difference2
 
 
-@app.route('/linechart')
+@app.route('/linechart', methods=['get','post'])
 def linechart():
     if not request.cookies.get('siteid'):
         res = make_response(redirect('/binapi/login'))
         return res
     mycookie = request.cookies.get('siteid')
-    siteid=mycookie   
+    siteid=mycookie
+    x = "0"
+    if not request.values.get("aStartDate") and not request.values.get("aEndDate"): 
+        dates, temps, soiltemps, sensor1, sensor2 = get_all(siteid)    
+    if request.values.get("aStartDate") and request.values.get("aEndDate"):
+        start_date = request.values.get("aStartDate")
+        end_date = request.values.get("aEndDate")
+        dates, temps, soiltemps, sensor1, sensor2 = get_all(siteid, start_date, end_date)
+    if request.values.get("aStartDate") and not request.values.get("aEndDate"):
+        start_date = request.values.get("aStartDate")
+        dates, temps, soiltemps, sensor1, sensor2 = get_all(siteid, start_date)
+    if request.values.get("aEndDate") and not request.values.get("aStartDate"):
+        end_date = request.values.get("aEndDate")
+        dates, temps, soiltemps, sensor1, sensor2 = get_all(siteid, x, end_date)
+    
     #  print(dict)
     # return jsonify({'data': dict})
     current_time, current_temp, temp_difference, current_soiltemp, temp_week_ago, current_sensor1, current_sensor2, temp_week_ago1, temp_week_ago2, temp_difference1, temp_difference2 = get_current_data()
+   
+    shortdate = datetime.strptime(current_time, '%Y-%m-%d %H:%M:%S.%f').strftime('%m/%d/%Y %H:%M')
     
-    dates, temps, soiltemps, sensor1, sensor2 = get_all(siteid)
-    
-    return render_template('index.html', siteid=siteid, temp_week_ago=temp_week_ago, temp_difference=temp_difference, temp_difference1=temp_difference1, temp_difference2=temp_difference2, temps=temps, dates=dates, soiltemps=soiltemps, current_soiltemp=current_soiltemp ,sensor1=sensor1,sensor2=sensor2, current_sensor1=current_sensor1, current_sensor2=current_sensor2, current_time=current_time, current_temp=current_temp, temp_week_ago1=temp_week_ago1, temp_week_ago2=temp_week_ago2)
+    return render_template('index.html', siteid=siteid, temp_week_ago=temp_week_ago, temp_difference=temp_difference, temp_difference1=temp_difference1, temp_difference2=temp_difference2, temps=temps, dates=dates, soiltemps=soiltemps, current_soiltemp=current_soiltemp ,sensor1=sensor1,sensor2=sensor2, current_sensor1=current_sensor1, current_sensor2=current_sensor2, shortdate=shortdate, current_temp=current_temp, temp_week_ago1=temp_week_ago1, temp_week_ago2=temp_week_ago2)
 
 
 @app.route('/login', methods=['POST', 'GET'])
@@ -238,6 +256,7 @@ def dashboard():
     current_time, current_temp, temp_difference, current_soiltemp, temp_week_ago, current_sensor1, current_sensor2, temp_week_ago1, temp_week_ago2, temp_difference1, temp_difference2 = get_current_data()
 
     dates, temps, soiltemps, sensor1, sensor2 = get_all(siteid)
+
     return render_template('dashboard.html', siteid=siteid, avg=avg, temp_week_ago=temp_week_ago, mycookie=mycookie, temp_difference=temp_difference,temps=temps, dates=dates, soiltemps=soiltemps ,sensor1=sensor1, current_sensor1=current_sensor1, current_sensor2=current_sensor2, sensor2=sensor2, current_time=current_time, current_temp=current_temp, current_soiltemp=current_soiltemp, temp_week_ago1=temp_week_ago1, temp_week_ago2=temp_week_ago2 )
 
 
@@ -289,11 +308,10 @@ def create_task():
 
 def insert_data(temp, siteid, soiltemp, sensor1, sensor2):
     print("insert date into database function")
+    timestamp = datetime.now()
     print(database)
     conn = sqlite3.connect(database)
     curs = conn.cursor()
-    timestamp = datetime.now()
-    # print(timestamp)
     #print("SENSOR1=:")
     #print(sensor1)
     curs.execute("INSERT INTO tbl_data values((?),(?),(?),(?),(?),(?),(?),(?),(?),(?))",
