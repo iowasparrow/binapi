@@ -62,10 +62,10 @@
     </li>
 
     <li class="nav-item">
-      <a class="nav-link disabled" href="#">SiteID:{{siteid}}</a>
+      <a class="nav-link" href="http://{{ request.environ['SERVER_NAME'] }}/bin_temperature">SiteID:{{siteid}}</a>
     </li>
   </ul>
-
+  <br>
   <!--	cookie is	  {{ mycookie }}-->
 
   <div class="container">
