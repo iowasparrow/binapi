@@ -5,7 +5,9 @@ from flask import abort
 from flask import request
 from flask import flash, redirect
 import sqlite3
+from subprocess import check_output
 from datetime import datetime, timezone, timedelta
+import re
 import json
 
 database = '/var/www/html/binweb/bin_temperature/sensorsData.db'
@@ -275,7 +277,9 @@ def linechart():
    
     shortdate = datetime.strptime(current_time, '%Y-%m-%d %H:%M:%S').strftime('%m/%d/%Y %H:%M')
     
-    return render_template('index.html', siteid=siteid, temp_week_ago=temp_week_ago, temp_difference=temp_difference, temp_difference1=temp_difference1, temp_difference2=temp_difference2, temps=airtemps, dates=dates, soiltemps=soiltemps, current_soiltemp=current_soiltemp ,sensor1=sensor1,sensor2=sensor2, current_sensor1=current_sensor1, current_sensor2=current_sensor2, shortdate=shortdate, current_temp=current_temp, temp_week_ago1=temp_week_ago1, temp_week_ago2=temp_week_ago2)
+    ipaddr = getipaddress()
+
+    return render_template('index.html', ipaddr=ipaddr, siteid=siteid, temp_week_ago=temp_week_ago, temp_difference=temp_difference, temp_difference1=temp_difference1, temp_difference2=temp_difference2, temps=airtemps, dates=dates, soiltemps=soiltemps, current_soiltemp=current_soiltemp ,sensor1=sensor1,sensor2=sensor2, current_sensor1=current_sensor1, current_sensor2=current_sensor2, shortdate=shortdate, current_temp=current_temp, temp_week_ago1=temp_week_ago1, temp_week_ago2=temp_week_ago2)
 
 
 @app.route('/login', methods=['POST', 'GET'])
@@ -307,7 +311,11 @@ def cookie(siteid = '0'):
         #res = make_response("Value of cookie siteid is {}".format(request.cookies.get('siteid')))
     return dashboard()
 
-
+def getipaddress():
+    ipaddr_bytes = check_output(['hostname', '-I'])
+    ipaddr = ipaddr_bytes.decode("utf-8")
+    ipaddr = re.sub(r"[\n\t\s]*", "", ipaddr)
+    return ipaddr
 
 @app.route('/dashboard')
 def dashboard():
@@ -319,6 +327,8 @@ def dashboard():
     #  print(dict)
     # return jsonify({'data': dict})
     avg = get_average()
+    
+    ipaddr = getipaddress()
 
     current_time, current_temp, temp_difference, temp_week_ago, current_soiltemp, current_sensor1, current_sensor2, temp_week_ago1, temp_week_ago2, temp_difference1, temp_difference2 = get_current_data()
     
@@ -326,7 +336,7 @@ def dashboard():
 
     dates, airtemps, soiltemps, cputemps, sensor1, sensor2 = get_all(siteid)
 
-    return render_template('dashboard.html', siteid=siteid, avg=avg, temp_week_ago=temp_week_ago, mycookie=mycookie, temp_difference=temp_difference,temps=airtemps, dates=dates, soiltemps=soiltemps ,sensor1=sensor1, current_sensor1=current_sensor1, current_sensor2=current_sensor2, sensor2=sensor2, current_time=current_time, current_temp=current_temp, current_soiltemp=current_soiltemp, temp_week_ago1=temp_week_ago1, temp_week_ago2=temp_week_ago2 )
+    return render_template('dashboard.html', ipaddr=ipaddr, siteid=siteid, avg=avg, temp_week_ago=temp_week_ago, mycookie=mycookie, temp_difference=temp_difference,temps=airtemps, dates=dates, soiltemps=soiltemps ,sensor1=sensor1, current_sensor1=current_sensor1, current_sensor2=current_sensor2, sensor2=sensor2, current_time=current_time, current_temp=current_temp, current_soiltemp=current_soiltemp, temp_week_ago1=temp_week_ago1, temp_week_ago2=temp_week_ago2 )
 
 
 @app.route('/delete-cookie/')
