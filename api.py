@@ -19,57 +19,6 @@ dict = {}
 test = {}
 
 
-##############
-@app.route('/api/download', methods=['GET'])
-def download():  # This returns all entries in the database into a dict and then converts to json.
-    conn = sqlite3.connect(database, check_same_thread=False)
-    curs = conn.cursor()
-    sql = "SELECT * FROM tbl_data WHERE siteid  = 1 ORDER BY timestamp DESC"
-    # we have to change site id to a list because when we get to double digits it thinks we are passing in a list of characters.
-    #curs.execute(sql, [siteid])
-    curs.execute(sql)
-    data = curs.fetchall()
-    dates = []
-    temps = []
-    # siteids = []
-    soiltemps = []
-    sensor1 = []
-    sensor2 = []
-    # sensor3 = []
-    # sensor4 = []
-    # sensor5 = []
-    # sensor6 = []
-    for row in reversed(data):
-        dates.append(row[0])
-        temps.append(row[1])
-        #siteids.append(row[2])
-        soiltemps.append(row[3])
-         #sensor1.append(row[4])
-        if row[4] == None:
-            #convert None to null so the chart is happy
-            sensor1.append('null')
-        elif row[4] == 0:
-            sensor1.append('null')
-        else:
-            sensor1.append(row[4])
-        sensor2.append(row[5])
-        # sensor3append(row[6])
-        # sensor4.append(row[7])
-        # sensor5.append(row[8])
-        # sensor6.append(row[9])
-
-        dict[row[0]] = {'date': row[0], 'temp': row[1], 'soiltemps':row[3] ,'sensor1': row[4], 'sensor2': row[5]}
-    conn.close()
-    #print(dict)
-    #return dates, temps, soiltemps, sensor1, sensor2
-    return jsonify({'data': dict})
-    
-
-
-#############
-
-
-@app.route('/api/getall', methods=['GET'])
 def get_all(start_date='1900-01-01', end_date='2050-01-01'):  # this is for the chart
     conn = sqlite3.connect(database, check_same_thread=False)
     curs = conn.cursor()
@@ -128,8 +77,10 @@ def get_json(start_date='1900-01-01', end_date='2050-01-01'):  # this is for the
     curs = conn.cursor()
     print("start date in getall function: " + start_date)
     print("end date in getall function: " + end_date)
-    sql = "SELECT * FROM pidata WHERE timestamp >= ? AND timestamp <= ? ORDER BY timestamp DESC"
-    curs.execute(sql, [start_date, end_date])
+    #sql = "SELECT * FROM pidata WHERE timestamp >= ? AND timestamp <= ? ORDER BY timestamp DESC"
+    sql = "SELECT * FROM pidata ORDER BY timestamp DESC LIMIT 1"
+    #curs.execute(sql, [start_date, end_date])
+    curs.execute(sql)
     data = curs.fetchall()
     dates = []
     airtemps = []
@@ -178,12 +129,7 @@ def get_json(start_date='1900-01-01', end_date='2050-01-01'):  # this is for the
     #print(json_formatted_str)
     #return json_formatted_str
     
-    
     return jsonify({'data': dict})
-
-
-
-
 
 
 def get_average():
@@ -344,13 +290,6 @@ def delete_cookie():
     res = make_response("Logged Out")
     res.set_cookie('siteid', max_age=0)
     return res
-
-@app.route('/todo/api/v1.0/tasks/<int:task_id>', methods=['GET'])
-def get_task(task_id):
-    task = [task for task in tasks if task['id'] == task_id]
-    if len(task) == 0:
-        abort(404)
-    return jsonify({'task': task[0]})
 
 
 @app.errorhandler(404)
