@@ -27,10 +27,10 @@
     <!--end zoom plugin-->
 
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.2/mqttws31.min.js" type="text/javascript"></script>
-    <script src="../demo.js" type="text/javascript"></script>
-
-
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.2/mqttws31.min.js" type="text/javascript"></script>-->
+    <script src="{{ url_for('static', filename='mqttws31.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='demo.js') }}"></script>
+    
 
   <script>
     $(function() {
@@ -38,23 +38,18 @@
     });
   </script>
 
+  <script>
+    $( document ).ready(function() {
+    console.log( "starting connection" );
+    startConnect()
+    });
+  </script>
+
+
   <style>
     body,
     html {
       height: 100%;
-    }
-
-    .bg {
-      /* The image used */
-      background-image: url("./images/bg.png");
-
-      /* Full height */
-      height: 45%;
-
-      /* Center and scale the image nicely */
-      background-position: center;
-      background-repeat: no-repeat;
-      background-size: cover;
     }
 
 </style>
@@ -80,12 +75,7 @@
   </li>
 </ul>
 
-
-
 <!--	cookie is	  {{ mycookie }}-->
-
-
-
 
 <div class="container">
 	<div class="row">
@@ -115,8 +105,8 @@
 
 <div class="container">
 	<div class="row">
-		<div class="col">
-<div class="card text-white bg-primary mb-3" style="max-width: 18rem;">
+		<div class="col-sm-3">
+<div class="card text-white bg-primary mb-3">
 	<!--<div class="card-header">Header</div>-->
   <div class="card-body">
     <h5 class="card-title">Hot Tub</h5>
@@ -124,27 +114,27 @@
   </div>
 </div>
 		</div>
-		<div class="col">
-<div class="card text-white bg-secondary mb-3" style="max-width: 18rem;">
+		<div class="col-sm-3">
+<div class="card text-white bg-secondary mb-3">
   <div class="card-body">
     <h5 class="card-title">Soil Temp</h5>
     <p class="card-text"><h2><i class="fas fa-seedling"></i>&nbsp;&nbsp;{{ current_soiltemp }}&deg;</h2><div class="text-right">12" Depth</div></p>
   </div>
 </div>
 		</div>
-		<div class="col">
-<div class="card text-white bg-success mb-3" style="max-width: 18rem;">
+		<div class="col-sm-3">
+<div class="card text-white bg-success mb-3">
   <div class="card-body">
     <h5 class="card-title">Air Temp</h5>
     <p class="card-text"><h2><i class="fas fa-thermometer-quarter"></i>&nbsp;&nbsp;{{ current_temp }}&deg;</h2><div class="text-right">Ida Grove, IA</div></p>
   </div>
 </div>
 		</div>
-		<div class="col">
-<div class="card text-white bg-primary mb-3" style="max-width: 18rem;">
+		<div class="col-sm-3">
+<div class="card text-white bg-primary mb-3">
   <div class="card-body">
     <h5 class="card-title">Cat House</h5>
-    <p class="card-text"><h2><i class="fas fa-cat"></i>&nbsp;&nbsp;{{ current_sensor2 }}&deg;</h2><div class="text-right">Mimi</div></p>
+    <p class="card-text"><h2><i class="fas fa-cat"></i><div id="sensor2"></div></h2></p>
   </div>
 </div>
 		</div>
@@ -152,35 +142,35 @@
 
 	<hr>
 <div class="row">
-	<div class="col">
-<div class="card text-white bg-primary mb-3" style="max-width: 18rem;">
+	<div class="col-sm-3">
+<div class="card text-white bg-primary mb-3">
   <div class="card-body">
 	  <h5 class="card-title">Hot Tub Live</h5>
 	  <p class="card-text"><h2><div id="sensor1"><h2></div></p>
   </div>
 </div>
 	</div>
-	<div class="col">
-<div class="card text-white bg-primary mb-3" style="max-width: 18rem;">
+	<div class="col-sm-3">
+<div class="card text-white bg-primary mb-3">
   <div class="card-body">
 	  <h5 class="card-title">Messages</h5>
 	  <p class="card-text"><small><div id="messages"></div></small></p>
   </div>
 </div>
 	</div>
-	<div class="col">
-<div class="card text-white bg-primary mb-3" style="max-width: 18rem;">
+	<div class="col-sm-3">
+<div class="card text-white bg-primary mb-3">
   <div class="card-body">
     <h5 class="card-title">RPi CPU</h5>
     <p class="card-text"><h2><div id="cpudiv"></div></h2></p>
   </div>
 </div>
 	</div>
-	<div class="col">
-<div class="card text-white bg-primary mb-3" style="max-width: 18rem;">
+	<div class="col-sm-3">
+<div class="card text-white bg-primary mb-3">
   <div class="card-body">
-    <h5 class="card-title">Cat House Live Temp</h5>
-    <p class="card-text"><h2><div id="sensor2"></div></h2></p>
+    <h5 class="card-title"></h5>
+    <p class="card-text"><h2></h2></p>
   </div>
 </div>
 	</div>
