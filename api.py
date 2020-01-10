@@ -190,10 +190,16 @@ def get_average():
     sql = "select avg(sensor1) from(select sensor1 from pihq WHERE sensor1 <> 'None' AND sensor1 <> '0' Order By timestamp desc limit 20)"
     # we have to change site id in the execute function to a list because when we get to double digits it thinks we are passing in a list of characters.
     curs.execute(sql)
-    data = curs.fetchall()
-    x = data[0]
-    y= round(x[0],2)
-    return y
+    print("here")
+    print(curs.rowcount)
+    
+    if curs.rowcount == -1:
+        return -1
+    else:
+        data = curs.fetchall()
+        x = data[0]
+        y= round(x[0],2)
+        return y
 
 
 def check_rapid_rise(current_temp, x):
@@ -312,15 +318,13 @@ def dashboard():
     siteid = mycookie
     #  print(dict)
     # return jsonify({'data': dict})
-    #avg = get_average()
+    avg = get_average()
 
     current_time, current_temp, temp_difference, temp_week_ago, current_soiltemp, current_sensor1, current_sensor2, temp_week_ago1, temp_week_ago2, temp_difference1, temp_difference2 = get_current_data()
     
     #print("current soiltemp- " + str(current_soiltemp))
 
     dates, airtemps, soiltemps, cputemps, sensor1, sensor2 = get_all(siteid)
-
-    avg = 0
 
     return render_template('dashboard.html', siteid=siteid, avg=avg, temp_week_ago=temp_week_ago, mycookie=mycookie, temp_difference=temp_difference,temps=airtemps, dates=dates, soiltemps=soiltemps ,sensor1=sensor1, current_sensor1=current_sensor1, current_sensor2=current_sensor2, sensor2=sensor2, current_time=current_time, current_temp=current_temp, current_soiltemp=current_soiltemp, temp_week_ago1=temp_week_ago1, temp_week_ago2=temp_week_ago2 )
 
