@@ -297,46 +297,44 @@ def not_found(error):
     return make_response(jsonify({'error': 'Not found'}), 404)
 
 
-@app.route('/api/v1.0/tasks', methods=['POST'])
+@app.route('/api/insert', methods=['POST'])
 def create_task():
-    if not request.json or not 'temp' in request.json:
+    if not request.json or not 'sensor1' in request.json:
         abort(400)
     task = {
-        'temp': request.json['temp'],
-        'siteid': request.json['siteid'],
+        'airtemp' : request.json['airtemp'],
+        'siteid'  : request.json['siteid'],
         'soiltemp': request.json['soiltemp'],
         'sensor1' : request.json['sensor1'],
-        'sensor2' : request.json['sensor2']
+        'sensor2' : request.json['sensor2'],
+        'picpu'   : request.json['picpu']
     }
-    temp = request.json['temp']
+    airtemp = request.json('airtemp')
     siteid = request.json.get('siteid')
     soiltemp = request.json.get('soiltemp')
     sensor1 = request.json.get('sensor1')
     sensor2 = request.json.get('sensor2')
+    picpu = request.json.get('picpu')
     print("calling inserting data into database function")
-    insert_data(temp, siteid, soiltemp, sensor1, sensor2)
-    print(temp)
-    print(siteid)
-    print(soiltemp)
+    print("siteid" + siteid)
+    log_to_database(airtemp, siteid, soiltemp, sensor1, sensor2, picpu)
     print("sensor2= " + str(sensor2))
     return jsonify({'task': task}), 201
 
     # return temp, siteid
 
 
-def insert_data(temp, siteid, soiltemp, sensor1, sensor2):
-    print("insert date into database function")
-    timestamp = datetime.now()
-    print(database)
-    conn = sqlite3.connect(database)
+def log_to_database(airtemp, siteid, soiltemp, sensor1,sensor2, picpu):
+    fmt = "%Y-%m-%d %H:%M:%S"
+    now_utc = datetime.now(timezone('UTC'))
+    now_central = now_utc.astimezone(timezone('US/Central'))
+    formatted_date = now_central.strftime(fmt)
+    #print("Formatted Date: " +formatted_date)
+    conn = sqlite3.connect(dbname)
     curs = conn.cursor()
-    #print("SENSOR1=:")
-    #print(sensor1)
-    curs.execute("INSERT INTO tbl_data values((?),(?),(?),(?),(?),(?),(?),(?),(?),(?))",
-                 (timestamp, temp, siteid, soiltemp, sensor1, sensor2, None, None, None, None))
+    curs.execute("INSERT INTO pidata VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)", (formatted_date, siteid, airtemp, None, soiltemp, None, picpu, sensor1, sensor2, None, None, None ,None ))
     conn.commit()
     conn.close()
-
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')

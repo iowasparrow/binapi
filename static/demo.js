@@ -66,6 +66,12 @@ function onMessageArrived(message) {
             console.log("sensor1");
             document.getElementById("sensor1").innerHTML = '<span>' + message.payloadString + "&deg;<br><br><h5>" + n + '</h5></span>';
     }
+
+        else if (message.destinationName == "crash/cputemp") { 
+            console.log("crashcpu"); 
+            document.getElementById("crashcpu").innerHTML = '<span>' + message.payloadString + "&deg;<br><br><h5>" + n + '</h5></span>'; 
+    }
+
    
 	
 	// document.getElementById("data").innerHTML = '<span>' + message.destinationName + '  = ' + message.payloadString + '</span><br/>';

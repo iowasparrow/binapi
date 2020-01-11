@@ -76,7 +76,7 @@
             <tr>
               <td><input hidden class="form-control" id="host" type="text" name="host" value="bintemp.com"></td>
               <td><input hidden class="form-control" id="port" type="text" name="port" value="9001"></td>
-              <td><input hidden class="form-control" id="topic" type="text" name="topic" value="home/#"><br></td>
+              <td><input hidden class="form-control" id="topic" type="text" name="topic" value="#"><br></td>
             </tr>
             <tr>
               <td><input class="btn btn-success" type="button" onclick="startConnect()" value="Connect"></td>
@@ -189,9 +189,9 @@
       <div class="col-sm-3">
         <div class="card text-white bg-primary mb-3">
           <div class="card-body">
-            <h5 class="card-title"></h5>
+            <h5 class="card-title">CrashCPU</h5>
             <p class="card-text">
-              <h2></h2>
+	    <h2><div id="crashcpu"></div></h2>
             </p>
           </div>
         </div>
