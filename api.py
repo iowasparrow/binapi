@@ -142,7 +142,6 @@ def get_average():
     # we have to change site id in the execute function to a list because when we get to double digits it thinks we are passing in a list of characters.
     curs.execute(sql)
     data = curs.fetchall()
-    print(rows)
     x = data[0]
     y= round(x[0],2)
     return y
