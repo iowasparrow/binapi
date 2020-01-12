@@ -141,16 +141,11 @@ def get_average():
     sql = "select avg(sensor1) from(select sensor1 from pihq WHERE sensor1 <> 'None' AND sensor1 <> '0' Order By timestamp desc limit 20)"
     # we have to change site id in the execute function to a list because when we get to double digits it thinks we are passing in a list of characters.
     curs.execute(sql)
-    print("here")
-    print(curs.rowcount)
-    
-    if curs.rowcount == -1:
-        return -1
-    else:
-        data = curs.fetchall()
-        x = data[0]
-        y= round(x[0],2)
-        return y
+    data = curs.fetchall()
+    print(rows)
+    x = data[0]
+    y= round(x[0],2)
+    return y
 
 
 def check_rapid_rise(current_temp, x):
@@ -320,7 +315,7 @@ def get_json_data():
     sensor2 = request.json.get('sensor2')
     picpu = request.json.get('picpu')
     log_to_database(airtemp, siteid, soiltemp, sensor1, sensor2, picpu)
-    print(data)
+    #print(data)
     return jsonify({'data': data}), 201
 
 
