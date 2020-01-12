@@ -9,6 +9,7 @@ from subprocess import check_output
 from datetime import datetime, timezone, timedelta
 import re
 import json
+from pytz import timezone
 
 database = '/var/www/html/binweb/bin_temperature/sensorsData.db'
 #database = 'customer.db'
@@ -25,6 +26,8 @@ def get_all(start_date='1900-01-01', end_date='2050-01-01'):  # this is for the 
     print("start date in getall function: " + start_date)
     print("end date in getall function: " + end_date)
     sql = "SELECT * FROM pidata WHERE timestamp >= ? AND timestamp <= ? ORDER BY timestamp DESC"
+    # we have to change site id to a list because when we get to double digits it thinks we are passing in a list of characters.
+    #curs.execute(sql, [siteid])
     curs.execute(sql, [start_date, end_date])
     data = curs.fetchall()
     dates = []
@@ -309,15 +312,17 @@ def create_task():
         'sensor2' : request.json['sensor2'],
         'picpu'   : request.json['picpu']
     }
-    airtemp = request.json('airtemp')
+    
+    airtemp = request.json['airtemp']
     siteid = request.json.get('siteid')
     soiltemp = request.json.get('soiltemp')
     sensor1 = request.json.get('sensor1')
     sensor2 = request.json.get('sensor2')
     picpu = request.json.get('picpu')
     print("calling inserting data into database function")
-    print("siteid" + siteid)
+    print("siteid " + str(siteid))
     log_to_database(airtemp, siteid, soiltemp, sensor1, sensor2, picpu)
+    print("sensor1= " + str(sensor1))
     print("sensor2= " + str(sensor2))
     return jsonify({'task': task}), 201
 
@@ -330,9 +335,9 @@ def log_to_database(airtemp, siteid, soiltemp, sensor1,sensor2, picpu):
     now_central = now_utc.astimezone(timezone('US/Central'))
     formatted_date = now_central.strftime(fmt)
     #print("Formatted Date: " +formatted_date)
-    conn = sqlite3.connect(dbname)
+    conn = sqlite3.connect(database)
     curs = conn.cursor()
-    curs.execute("INSERT INTO pidata VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)", (formatted_date, siteid, airtemp, None, soiltemp, None, picpu, sensor1, sensor2, None, None, None ,None ))
+    curs.execute("INSERT INTO pihq VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)", (formatted_date, siteid, airtemp, None, soiltemp, None, picpu, sensor1, sensor2, None, None, None ,None ))
     conn.commit()
     conn.close()
 
