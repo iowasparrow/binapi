@@ -301,10 +301,10 @@ def not_found(error):
 
 
 @app.route('/api/insert', methods=['POST'])
-def create_task():
+def get_json_data():
     if not request.json or not 'sensor1' in request.json:
         abort(400)
-    task = {
+    data = {
         'airtemp' : request.json['airtemp'],
         'siteid'  : request.json['siteid'],
         'soiltemp': request.json['soiltemp'],
@@ -313,20 +313,15 @@ def create_task():
         'picpu'   : request.json['picpu']
     }
     
-    airtemp = request.json['airtemp']
+    airtemp = request.json.get('airtemp')
     siteid = request.json.get('siteid')
     soiltemp = request.json.get('soiltemp')
     sensor1 = request.json.get('sensor1')
     sensor2 = request.json.get('sensor2')
     picpu = request.json.get('picpu')
-    print("calling inserting data into database function")
-    print("siteid " + str(siteid))
     log_to_database(airtemp, siteid, soiltemp, sensor1, sensor2, picpu)
-    print("sensor1= " + str(sensor1))
-    print("sensor2= " + str(sensor2))
-    return jsonify({'task': task}), 201
-
-    # return temp, siteid
+    print(data)
+    return jsonify({'data': data}), 201
 
 
 def log_to_database(airtemp, siteid, soiltemp, sensor1,sensor2, picpu):
