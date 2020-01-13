@@ -177,7 +177,7 @@ def check_rapid_rise(current_temp, x):
 
 def get_current_data(siteid):  # get current values for display on web page
     
-    print("site id in get current data " + siteid)
+    print("site id in get current data " + str(siteid))
     
     conn = sqlite3.connect(database, check_same_thread=False)
     curs = conn.cursor()
