@@ -72,7 +72,10 @@ function onMessageArrived(message) {
             document.getElementById("crashcpu").innerHTML = '<span>' + message.payloadString + "&deg;<br><br><h5>" + n + '</h5></span>'; 
     }
 
-   
+        else if (message.destinationName == "crash/livingroom") {
+            console.log("livingroom");
+            document.getElementById("sensor1").innerHTML = '<span>' + message.payloadString + "&deg;<br><br><h5>" + n + '</h5></span>';
+    }   
 	
 	// document.getElementById("data").innerHTML = '<span>' + message.destinationName + '  = ' + message.payloadString + '</span><br/>';
 //    updateScroll(); // Scroll to bottom of window

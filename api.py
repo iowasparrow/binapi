@@ -20,15 +20,16 @@ dict = {}
 test = {}
 
 
-def get_all(start_date='1900-01-01', end_date='2050-01-01'):  # this is for the chart
+def get_all(siteid, start_date='1900-01-01', end_date='2050-01-01'):  # this is for the chart
     conn = sqlite3.connect(database, check_same_thread=False)
     curs = conn.cursor()
     print("start date in getall function: " + start_date)
     print("end date in getall function: " + end_date)
-    sql = "SELECT * FROM pidata WHERE timestamp >= ? AND timestamp <= ? ORDER BY timestamp DESC"
+    print("SiteID in getall function: " + siteid)
+    sql = "SELECT * FROM pihq WHERE timestamp >= ? AND timestamp <= ? and siteid = ? ORDER BY timestamp DESC"
     # we have to change site id to a list because when we get to double digits it thinks we are passing in a list of characters.
     #curs.execute(sql, [siteid])
-    curs.execute(sql, [start_date, end_date])
+    curs.execute(sql, [start_date, end_date, siteid])
     data = curs.fetchall()
     dates = []
     airtemps = []
@@ -152,24 +153,32 @@ def check_rapid_rise(current_temp, x):
     curs = conn.cursor()
     temp_week_ago = 0
     for row in curs.execute(
-            "SELECT * FROM pihq WHERE timestamp BETWEEN datetime('now', '-8 days') AND datetime('now', '-6 days') LIMIT 1;"):
+            "SELECT * FROM pidata WHERE timestamp BETWEEN datetime('now', '-8 days') AND datetime('now', '-6 days') LIMIT 1;"):
         temp_week_ago = row[x]
-    conn.close()
-    if temp_week_ago == None:
+        if temp_week_ago == "":
             temp_week_ago = 0
+    conn.close()
+    if temp_week_ago is None:
+        temp_week_ago = 0
+    if current_temp == None:
+        current_temp = 0
+    print("temp week ago: " + str(temp_week_ago))
+    print("current temp " + str(current_temp))
+
     temp_difference = current_temp - temp_week_ago
-    #print('temp difference=', temp_difference)
     if temp_difference >= 3 and current_temp > 32:
-        #print("DANGER RAPID RISE DETECTED 3 degrees in one week at 32.")
-        # set_temp_alarm('true')
-        formatted_temp_difference = round(temp_difference, 1)
-        return formatted_temp_difference, temp_week_ago
+        # print("DANGER RAPID RISE DETECTED 3 degrees in one week at 32.")
+        #set_temp_alarm('true')
+        temp_difference_rounded = round(temp_difference, 2)
+        return temp_difference_rounded, temp_week_ago
     else:
-        formatted_temp_difference = round(temp_difference, 1)
-        return formatted_temp_difference, temp_week_ago
+        temp_difference_rounded = round(temp_difference, 2)
+        return temp_difference_rounded, temp_week_ago
 
-
-def get_current_data():  # get current values for display on web page
+def get_current_data(siteid):  # get current values for display on web page
+    
+    print("site id in get current data " + siteid)
+    
     conn = sqlite3.connect(database, check_same_thread=False)
     curs = conn.cursor()
     current_time = []
@@ -177,7 +186,8 @@ def get_current_data():  # get current values for display on web page
     current_soiltemp = []
     sensor1 = []
     sensor2 = []
-    for row in curs.execute("SELECT * FROM pidata ORDER BY timestamp DESC LIMIT 1"):
+    sql = "SELECT * FROM pihq WHERE siteid = ? ORDER BY timestamp DESC LIMIT 1" 
+    for row in curs.execute(sql, siteid):
         current_time = str(row[0])
         current_temp = row[2]
         current_soiltemp = row[4]
@@ -203,20 +213,23 @@ def linechart():
     x = "0"
     if not request.values.get("aStartDate") and not request.values.get("aEndDate"): 
         dates, airtemps, soiltemps, cputemps, sensor1, sensor2 = get_all(siteid)    
+    
     if request.values.get("aStartDate") and request.values.get("aEndDate"):
         start_date = request.values.get("aStartDate")
         end_date = request.values.get("aEndDate")
         dates, airtemps, soiltemps, cputemps, sensor1, sensor2 = get_all(siteid, start_date, end_date)
+    
     if request.values.get("aStartDate") and not request.values.get("aEndDate"):
         start_date = request.values.get("aStartDate")
         dates, airtemps, soiltemps, cputemps, sensor1, sensor2 = get_all(siteid, start_date)
+    
     if request.values.get("aEndDate") and not request.values.get("aStartDate"):
         end_date = request.values.get("aEndDate")
         dates, airtemps, soiltemps, cputemps, sensor1, sensor2 = get_all(siteid, x, end_date)
     
     #  print(dict)
     # return jsonify({'data': dict})
-    current_time, current_temp, temp_difference, current_soiltemp, temp_week_ago, current_sensor1, current_sensor2, temp_week_ago1, temp_week_ago2, temp_difference1, temp_difference2 = get_current_data()
+    current_time, current_temp, temp_difference, current_soiltemp, temp_week_ago, current_sensor1, current_sensor2, temp_week_ago1, temp_week_ago2, temp_difference1, temp_difference2 = get_current_data(siteid)
    
     shortdate = datetime.strptime(current_time, '%Y-%m-%d %H:%M:%S').strftime('%m/%d/%Y %H:%M')
     
@@ -273,18 +286,20 @@ def dashboard():
     
     ipaddr = getipaddress()
 
-    current_time, current_temp, temp_difference, temp_week_ago, current_soiltemp, current_sensor1, current_sensor2, temp_week_ago1, temp_week_ago2, temp_difference1, temp_difference2 = get_current_data()
+    current_time, current_temp, temp_difference, temp_week_ago, current_soiltemp, current_sensor1, current_sensor2, temp_week_ago1, temp_week_ago2, temp_difference1, temp_difference2 = get_current_data(siteid)
     
     #print("current soiltemp- " + str(current_soiltemp))
 
     dates, airtemps, soiltemps, cputemps, sensor1, sensor2 = get_all(siteid)
 
-    return render_template('dashboard.html', ipaddr=ipaddr, siteid=siteid, avg=avg, temp_week_ago=temp_week_ago, mycookie=mycookie, temp_difference=temp_difference,temps=airtemps, dates=dates, soiltemps=soiltemps ,sensor1=sensor1, current_sensor1=current_sensor1, current_sensor2=current_sensor2, sensor2=sensor2, current_time=current_time, current_temp=current_temp, current_soiltemp=current_soiltemp, temp_week_ago1=temp_week_ago1, temp_week_ago2=temp_week_ago2 )
+    if siteid == 1:
+        return render_template('dashboard.html', ipaddr=ipaddr, siteid=siteid, avg=avg, temp_week_ago=temp_week_ago, mycookie=mycookie, temp_difference=temp_difference,temps=airtemps, dates=dates, soiltemps=soiltemps ,sensor1=sensor1, current_sensor1=current_sensor1, current_sensor2=current_sensor2, sensor2=sensor2, current_time=current_time, current_temp=current_temp, current_soiltemp=current_soiltemp, temp_week_ago1=temp_week_ago1, temp_week_ago2=temp_week_ago2 )
+    else:
+        return render_template('dashboard_customer.html', ipaddr=ipaddr, siteid=siteid, avg=avg, temp_week_ago=temp_week_ago, mycookie=mycookie, temp_difference=temp_difference,temps=airtemps, dates=dates, soiltemps=soiltemps ,sensor1=sensor1, current_sensor1=current_sensor1, current_sensor2=current_sensor2, sensor2=sensor2, current_time=current_time, current_temp=current_temp, current_soiltemp=current_soiltemp, temp_week_ago1=temp_week_ago1, temp_week_ago2=temp_week_ago2 )
 
-
-@app.route('/delete-cookie/')
+@app.route('/logout')
 def delete_cookie():
-    res = make_response("Logged Out")
+    res = make_response("<a href=""http://bintemp.com/binapi/login"">Log In</a>")
     res.set_cookie('siteid', max_age=0)
     return res
 
@@ -314,6 +329,7 @@ def get_json_data():
     sensor2 = request.json.get('sensor2')
     picpu = request.json.get('picpu')
     log_to_database(airtemp, siteid, soiltemp, sensor1, sensor2, picpu)
+    print("api data being logged")
     #print(data)
     return jsonify({'data': data}), 201
 
@@ -326,7 +342,7 @@ def log_to_database(airtemp, siteid, soiltemp, sensor1,sensor2, picpu):
     #print("Formatted Date: " +formatted_date)
     conn = sqlite3.connect(database)
     curs = conn.cursor()
-    curs.execute("INSERT INTO pihq VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)", (formatted_date, siteid, airtemp, None, soiltemp, None, picpu, sensor1, sensor2, None, None, None ,None ))
+    curs.execute("INSERT INTO pihq VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)", (formatted_date, None, airtemp, siteid, soiltemp, None, picpu, sensor1, sensor2, None, None, None ,None ))
     conn.commit()
     conn.close()
 
