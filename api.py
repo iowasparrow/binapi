@@ -136,12 +136,12 @@ def get_json(start_date='1900-01-01', end_date='2050-01-01'):  # this is for the
     return jsonify({'data': dict})
 
 
-def get_average():
+def get_average(siteid):
     conn = sqlite3.connect(database, check_same_thread=False)
     curs = conn.cursor()
-    sql = "select avg(sensor1) from(select sensor1 from pihq WHERE sensor1 <> 'None' AND sensor1 <> '0' Order By timestamp desc limit 20)"
+    sql = "select avg(sensor1) from(select sensor1 from pihq WHERE siteid = ? AND sensor1 <> 'None' AND sensor1 <> '0' Order By timestamp desc limit 20)"
     # we have to change site id in the execute function to a list because when we get to double digits it thinks we are passing in a list of characters.
-    curs.execute(sql)
+    curs.execute(sql, [siteid])
     data = curs.fetchall()
     x = data[0]
     y= round(x[0],2)
@@ -282,7 +282,7 @@ def dashboard():
     siteid = mycookie
     #  print(dict)
     # return jsonify({'data': dict})
-    avg = get_average()
+    avg = get_average(siteid)
     
     ipaddr = getipaddress()
 
