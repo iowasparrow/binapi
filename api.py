@@ -6,7 +6,7 @@ from flask import request
 from flask import flash, redirect
 import sqlite3
 from subprocess import check_output
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta
 import re
 import json
 from pytz import timezone
