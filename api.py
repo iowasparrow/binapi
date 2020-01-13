@@ -311,7 +311,9 @@ def not_found(error):
 
 @app.route('/api/insert', methods=['POST'])
 def get_json_data():
+    print("starting api insert function")
     if not request.json or not 'sensor1' in request.json:
+        print("abort 400")
         abort(400)
     data = {
         'airtemp' : request.json['airtemp'],
@@ -328,23 +330,29 @@ def get_json_data():
     sensor1 = request.json.get('sensor1')
     sensor2 = request.json.get('sensor2')
     picpu = request.json.get('picpu')
+    print("in api function going to call the log to database function")
     log_to_database(airtemp, siteid, soiltemp, sensor1, sensor2, picpu)
-    print("api data being logged")
-    #print(data)
+    print("in api function, end of api insert function, returning data array:")
+    print(data)
     return jsonify({'data': data}), 201
 
 
 def log_to_database(airtemp, siteid, soiltemp, sensor1,sensor2, picpu):
+    print("starting log to database function")
     fmt = "%Y-%m-%d %H:%M:%S"
     now_utc = datetime.now(timezone('UTC'))
     now_central = now_utc.astimezone(timezone('US/Central'))
     formatted_date = now_central.strftime(fmt)
     #print("Formatted Date: " +formatted_date)
+    print("opening database")
     conn = sqlite3.connect(database)
     curs = conn.cursor()
     curs.execute("INSERT INTO pihq VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)", (formatted_date, None, airtemp, siteid, soiltemp, None, picpu, sensor1, sensor2, None, None, None ,None ))
     conn.commit()
+    print("committed changes")
     conn.close()
+    print("end of log to db function")
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
