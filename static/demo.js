@@ -67,9 +67,9 @@ function onMessageArrived(message) {
             document.getElementById("sensor1").innerHTML = '<span>' + message.payloadString + "&deg;<br><br><h5>" + n + '</h5></span>';
     }
 
-        else if (message.destinationName == "home/sensor1") {
+        else if (message.destinationName == "home/sparesensor") {
             console.log("livingroom");
-            document.getElementById("sensor1").innerHTML = '<span>' + message.payloadString + "&deg;<br><br><h5>" + n + '</h5></span>';
+            document.getElementById("sparesensor").innerHTML = '<span>' + message.payloadString + "&deg;<br><br><h5>" + n + '</h5></span>';
     }   
 	
 	// document.getElementById("data").innerHTML = '<span>' + message.destinationName + '  = ' + message.payloadString + '</span><br/>';
