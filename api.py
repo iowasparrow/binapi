@@ -292,7 +292,7 @@ def dashboard():
 
     dates, airtemps, soiltemps, cputemps, sensor1, sensor2 = get_all(siteid)
 
-    if siteid == 1:
+    if siteid == '1':
         return render_template('dashboard.html', ipaddr=ipaddr, siteid=siteid, avg=avg, temp_week_ago=temp_week_ago, mycookie=mycookie, temp_difference=temp_difference,temps=airtemps, dates=dates, soiltemps=soiltemps ,sensor1=sensor1, current_sensor1=current_sensor1, current_sensor2=current_sensor2, sensor2=sensor2, current_time=current_time, current_temp=current_temp, current_soiltemp=current_soiltemp, temp_week_ago1=temp_week_ago1, temp_week_ago2=temp_week_ago2 )
     else:
         return render_template('dashboard_customer.html', ipaddr=ipaddr, siteid=siteid, avg=avg, temp_week_ago=temp_week_ago, mycookie=mycookie, temp_difference=temp_difference,temps=airtemps, dates=dates, soiltemps=soiltemps ,sensor1=sensor1, current_sensor1=current_sensor1, current_sensor2=current_sensor2, sensor2=sensor2, current_time=current_time, current_temp=current_temp, current_soiltemp=current_soiltemp, temp_week_ago1=temp_week_ago1, temp_week_ago2=temp_week_ago2 )

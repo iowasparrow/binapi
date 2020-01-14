@@ -66,7 +66,7 @@
     </li>
   </ul>
   <br>
-  	cookie is	  {{ mycookie }}
+dashboard customer	  {{ mycookie }}
 
   <div class="container">
     <div class="row">
@@ -76,7 +76,7 @@
             <tr>
               <td><input hidden class="form-control" id="host" type="text" name="host" value="bintemp.com"></td>
               <td><input hidden class="form-control" id="port" type="text" name="port" value="9001"></td>
-              <td><input hidden class="form-control" id="topic" type="text" name="topic" value="crash/#"><br></td>
+              <td><input class="form-control" id="topic" type="text" name="topic" value="#"><br></td>
             </tr>
             <tr>
               <td><input class="btn btn-success" type="button" onclick="startConnect()" value="Connect"></td>
@@ -100,7 +100,7 @@
         <div class="card text-white bg-primary mb-3">
           <!--<div class="card-header">Header</div>-->
           <div class="card-body">
-            <h5 class="card-title">Sensor 1</h5>
+            <h5 class="card-title">Sensor 1</h5> 
             <p class="card-text">
               <h2><i class="fas fa-thermometer-quarter"></i>&nbsp;&nbsp;{{ current_sensor1 }}&deg;</h2>
               <div class="text-right">Avg. {{avg}}</div>
@@ -125,7 +125,7 @@
             <h5 class="card-title">Air Temp</h5>
             <p class="card-text">
               <h2><i class="fas fa-thermometer-quarter"></i>&nbsp;&nbsp;{{ current_temp }}&deg;</h2>
-              <div class="text-right">Lake View, IA</div>
+              <div class="text-right">Ida Grove, IA</div>
             </p>
           </div>
         </div>
@@ -133,7 +133,7 @@
       <div class="col-sm-3">
         <div class="card text-white bg-primary mb-3">
           <div class="card-body">
-            <h5 class="card-title">Sensor 2</h5>
+            <h5 class="card-title">Sensor 2 Live</h5>
             <p class="card-text">
               <h2><i class="fas fa-thermometer-quarter"></i>
                 <div class="text-center" id="sensor2"></div>
@@ -176,7 +176,7 @@
       <div class="col-sm-3">
         <div class="card text-white bg-primary mb-3">
           <div class="card-body">
-            <h5 class="card-title">RPi CPU</h5>
+            <h5 class="card-title">Pi Zero-W CPU</h5>
             <p class="card-text">
               <h2>
                 <div id="cpudiv"></div>
@@ -189,7 +189,7 @@
       <div class="col-sm-3">
         <div class="card text-white bg-primary mb-3">
           <div class="card-body">
-            <h5 class="card-title">Zero CPU</h5>
+            <h5 class="card-title"></h5>
             <p class="card-text">
 	    <h2><div id="crashcpu"></div></h2>
             </p>
@@ -210,7 +210,7 @@
       var bin_bar = new Chart(ctx, {
         type: 'bar',
         data: {
-          labels: ['Air Temp', 'Soil Temp', 'Sensor1', 'Sensor2', 'Sensor3', 'Sensor4'],
+          labels: ['Temp', 'Soil Temp', 'Hot Tub', 'Sensor2', 'Sensor3', 'Sensor4'],
           datasets: [{
             label: 'Temperature',
             data: [{{ current_temp }}, {{ current_soiltemp }}, {{ current_sensor1 }}, 5, 2, -3],
