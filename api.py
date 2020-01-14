@@ -284,7 +284,12 @@ def dashboard():
     siteid = mycookie
     #  print(dict)
     # return jsonify({'data': dict})
-    avg = get_average(siteid)
+    
+    try:
+        avg = get_average(siteid)
+    except:
+        print("can't get average")
+        avg = -1
     
     ipaddr = getipaddress()
 
