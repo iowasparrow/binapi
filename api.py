@@ -162,6 +162,7 @@ def check_rapid_rise(current_temp, x):
         temp_week_ago = 0
     if current_temp == None:
         current_temp = 0
+    #print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
     print("temp week ago: " + str(temp_week_ago))
     print("current temp " + str(current_temp))
 
@@ -177,7 +178,7 @@ def check_rapid_rise(current_temp, x):
 
 def get_current_data(siteid):  # get current values for display on web page
     
-    print("site id in get current data " + str(siteid))
+    #print("site id in get current data " + str(siteid))
     
     conn = sqlite3.connect(database, check_same_thread=False)
     curs = conn.cursor()
@@ -242,7 +243,8 @@ def linechart():
 def login():
     
     if request.cookies.get('siteid'):
-        flash_text()
+        siteid = request.cookies.get('siteid')
+        flash_text(siteid)
     error = ''
     siteid = request.values.get("asiteid")
     #print(siteid)
@@ -252,8 +254,8 @@ def login():
     return render_template('login.html', error=error)
 
 
-def flash_text():
-    flash("You are logged in")
+def flash_text(siteid):
+    flash("You are logged in siteid= " + siteid)
     print("you are logged in")
 
 @app.route('/cookie/')
