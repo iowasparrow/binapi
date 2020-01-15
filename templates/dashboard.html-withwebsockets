@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head runat="server">
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="Grain bin temperature monitoring sytem">
+  <meta name="keywords" content="grain, bin, temperature, temp, monitoring, sytem, proble, controller">
+  <meta name="author" content="Grant Siebrecht">
+  <meta name="google-site-verification" content="utJDX4OPa_MoU_38meeYScgCTluaJhdUxcDt-XttXcQ" />
+  <title>Grain Bin Temperature Monitoring System</title>
+
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.css') }}">
+  <script src="{{ url_for('static', filename='Chart.js') }}"></script>
+  <script src="{{ url_for('static', filename='jquery-3.4.1.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
+  <script src="{{ url_for('static', filename='popper.min.js') }}"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.css">
+  <!--zoom plugin-->
+  <script src="{{ url_for('static', filename='chartzoom/hammerjs2.0.8') }}"></script>
+  <script src="{{ url_for('static', filename='chartzoom/chartjs-plugin-zoom0.7.4') }}"></script>
+  <!--end zoom plugin-->
+  <!--<script src="{{ url_for('static', filename='mqttws31.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='demo.js') }}"></script>-->
+
+  <script>
+    $(function () {
+      $("#header").load("http://bintemp.com/nav.html");
+    });
+  </script>
+
+  <script>
+    $(document).ready(function () {
+      console.log("starting connection");
+      startConnect()
+    });
+  </script>
+
+
+  <style>
+    body,
+    html {
+      height: 100%;
+    }
+  </style>
+
+</head>
+
+<body>
+
+  <div id="header"></div>
+
+  <ul class="nav nav-tabs">
+    <li class="nav-item">
+      <a class="nav-link active" href="#">Dashboard</a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link" href="linechart">Line Chart</a>
+    </li>
+
+    <li class="nav-item">
+	    <a class="nav-link" href="http://{{ipaddr}}/bin_temperature">My Site:{{siteid}}</a>
+    </li>
+  </ul>
+  <br>
+  <!-- Dashboard cookie is	  {{ mycookie }}-->
+
+  <div class="container">
+    <div class="row">
+      <div class="col">
+        <form id="connection-information-form">
+          <table class="table table-borderless">
+            <tr>
+              <td><input hidden class="form-control" id="host" type="text" name="host" value="bintemp.com"></td>
+              <td><input hidden class="form-control" id="port" type="text" name="port" value="9001"></td>
+              <td><input hidden class="form-control" id="topic" type="text" name="topic" value="#"><br></td>
+            </tr>
+            <tr>
+              <td><input class="btn btn-success" type="button" onclick="startConnect()" value="Connect"></td>
+              <td><input class="btn btn-primary" type="button" onclick="startDisconnect()" value="Disconnect"></td>
+            </tr>
+          </table>
+        </form>
+      </div>
+      <div class="col">
+        <div id="status"></div>
+      </div>
+    </div>
+  </div>
+
+
+
+
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-3">
+        <div class="card text-white bg-primary mb-3">
+          <!--<div class="card-header">Header</div>-->
+          <div class="card-body">
+            <h5 class="card-title">Hot Tub</h5>
+            <p class="card-text">
+              <h2><i class="fas fa-hot-tub"></i>&nbsp;&nbsp;{{ current_sensor1 }}&deg;</h2>
+              <div class="text-right">Avg. {{avg}}</div>
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-3">
+        <div class="card text-white bg-secondary mb-3">
+          <div class="card-body">
+            <h5 class="card-title">Soil Temp</h5>
+            <p class="card-text">
+              <h2><i class="fas fa-seedling"></i>&nbsp;&nbsp;{{ current_soiltemp }}&deg;</h2>
+              <div class="text-right">12" Depth</div>
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-3">
+        <div class="card text-white bg-success mb-3">
+          <div class="card-body">
+            <h5 class="card-title">Air Temp</h5>
+            <p class="card-text">
+              <h2><i class="fas fa-thermometer-quarter"></i>&nbsp;&nbsp;{{ current_temp }}&deg;</h2>
+              <div class="text-right">Ida Grove, IA</div>
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-3">
+        <div class="card text-white bg-primary mb-3">
+          <div class="card-body">
+            <h5 class="card-title">Cat House Live</h5>
+            <p class="card-text">
+              <h2><i class="fas fa-cat"></i>&nbsp;&nbsp;{{ current_sensor2 }}&deg;</h2>
+                <div class="text-right">Mimi</div>
+              </h2>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+
+<!--    <div class="row">
+
+      <div class="col-sm-3">
+        <div class="card text-white bg-primary mb-3">
+          <div class="card-body">
+            <h5 class="card-title">Hot Tub Live</h5>
+            <p class="card-text">
+              <h2><i class="fas fa-thermometer-quarter"></i>
+                <div class="text-center" id="sensor1">
+              </h2>
+          </div>
+          </p>
+        </div>
+      </div>
+
+      <div class="col-sm-3">
+        <div class="card text-white bg-primary mb-3">
+          <div class="card-body">
+            <h5 class="card-title">Messages</h5>
+            <p class="card-text"><small>
+                <div id="messages"></div>
+              </small></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-sm-3">
+        <div class="card text-white bg-primary mb-3">
+          <div class="card-body">
+            <h5 class="card-title">Pi Zero-W CPU</h5>
+            <p class="card-text">
+              <h2>
+                <div id="cpudiv"></div>
+              </h2>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-sm-3">
+        <div class="card text-white bg-primary mb-3">
+          <div class="card-body">
+            <h5 class="card-title">Spare Temp Sensor Live</h5>
+            <p class="card-text">
+	    <h2><div id="sparesensor"></div></h2>
+            </p>
+          </div>
+        </div>
+      </div>
+      </div>-->
+  </div>
+
+
+
+  <div class="container">
+
+
+    <canvas id="bin_bar" width="400" height="200"></canvas>
+    <script>
+      var ctx = document.getElementById('bin_bar');
+      var bin_bar = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Air Temp', 'Soil Temp', 'Hot Tub', 'Cat House'],
+          datasets: [{
+            label: 'Temperature',
+		  data: [{{ current_temp }}, {{ current_soiltemp }}, {{ current_sensor1 }}, {{ current_sensor2 }}],
+      backgroundColor: [
+        'rgba(255, 99, 132, 0.5)',
+        'rgba(54, 162, 235, 0.5)',
+        'rgba(255, 206, 86, 0.5)',
+        'rgba(75, 192, 192, 0.5)',
+        'rgba(153, 102, 255, 0.5)',
+        'rgba(255, 159, 64, 0.5)'
+      ],
+        borderColor: [
+          'rgba(255, 99, 132, 1)',
+          'rgba(54, 162, 235, 1)',
+          'rgba(255, 206, 86, 1)',
+          'rgba(75, 192, 192, 1)',
+          'rgba(153, 102, 255, 1)',
+          'rgba(255, 159, 64, 1)'
+        ],
+          borderWidth: 1
+                              }]
+                          },
+      options: {
+        scales: {
+          yAxes: [{
+            ticks: {
+              beginAtZero: true
+            }
+          }]
+        }
+      }
+                      });
+    </script>
+
+  </div>
+
+</body>
+
+</html>
