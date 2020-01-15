@@ -22,19 +22,10 @@
   <script src="{{ url_for('static', filename='chartzoom/hammerjs2.0.8') }}"></script>
   <script src="{{ url_for('static', filename='chartzoom/chartjs-plugin-zoom0.7.4') }}"></script>
   <!--end zoom plugin-->
-  <!--<script src="{{ url_for('static', filename='mqttws31.min.js') }}"></script>
-  <script src="{{ url_for('static', filename='demo.js') }}"></script>-->
 
   <script>
     $(function () {
       $("#header").load("http://bintemp.com/nav.html");
-    });
-  </script>
-
-  <script>
-    $(document).ready(function () {
-      console.log("starting connection");
-      startConnect()
     });
   </script>
 
@@ -67,31 +58,6 @@
   </ul>
   <br>
   <!-- Dashboard cookie is	  {{ mycookie }}-->
-
-  <div class="container">
-    <div class="row">
-      <div class="col">
-        <form id="connection-information-form">
-          <table class="table table-borderless">
-            <tr>
-              <td><input hidden class="form-control" id="host" type="text" name="host" value="bintemp.com"></td>
-              <td><input hidden class="form-control" id="port" type="text" name="port" value="9001"></td>
-              <td><input hidden class="form-control" id="topic" type="text" name="topic" value="#"><br></td>
-            </tr>
-            <tr>
-              <td><input class="btn btn-success" type="button" onclick="startConnect()" value="Connect"></td>
-              <td><input class="btn btn-primary" type="button" onclick="startDisconnect()" value="Disconnect"></td>
-            </tr>
-          </table>
-        </form>
-      </div>
-      <div class="col">
-        <div id="status"></div>
-      </div>
-    </div>
-  </div>
-
-
 
 
   <div class="container">
@@ -133,7 +99,7 @@
       <div class="col-sm-3">
         <div class="card text-white bg-primary mb-3">
           <div class="card-body">
-            <h5 class="card-title">Cat House Live</h5>
+            <h5 class="card-title">Cat House</h5>
             <p class="card-text">
               <h2><i class="fas fa-cat"></i>&nbsp;&nbsp;{{ current_sensor2 }}&deg;</h2>
                 <div class="text-right">Mimi</div>

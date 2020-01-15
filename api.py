@@ -337,28 +337,28 @@ def get_json_data():
     sensor1 = request.json.get('sensor1')
     sensor2 = request.json.get('sensor2')
     picpu = request.json.get('picpu')
-    print("in api function going to call the log to database function")
+#    print("in api function going to call the log to database function")
     log_to_database(airtemp, siteid, soiltemp, sensor1, sensor2, picpu)
-    print("in api function, end of api insert function, returning data array:")
+#    print("in api function, end of api insert function, returning data array:")
     print(data)
     return jsonify({'data': data}), 201
 
 
 def log_to_database(airtemp, siteid, soiltemp, sensor1,sensor2, picpu):
-    print("starting log to database function")
+#    print("starting log to database function")
     fmt = "%Y-%m-%d %H:%M:%S"
     now_utc = datetime.now(timezone('UTC'))
     now_central = now_utc.astimezone(timezone('US/Central'))
     formatted_date = now_central.strftime(fmt)
     #print("Formatted Date: " +formatted_date)
-    print("opening database")
+#    print("opening database")
     conn = sqlite3.connect(database)
     curs = conn.cursor()
     curs.execute("INSERT INTO pihq VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)", (formatted_date, None, airtemp, siteid, soiltemp, None, picpu, sensor1, sensor2, None, None, None ,None ))
     conn.commit()
-    print("committed changes")
+#    print("committed changes")
     conn.close()
-    print("end of log to db function")
+#    print("end of log to db function")
 
 
 if __name__ == '__main__':
