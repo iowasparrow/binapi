@@ -129,6 +129,16 @@ var myChart = new Chart(ctx, {
 	    backgroundColor: "orange",
 	    borderColor: "orange"
         },
+
+	{
+            label: 'CPU Temp',
+            fill: false,
+            data: [{% for cpu in cputemps %}{{ cpu }},{% endfor %}],
+            backgroundColor: "brown",
+            borderColor: "brown"
+        },
+
+
 	{
 	label: 'Sensor 1',
 	fill: false,

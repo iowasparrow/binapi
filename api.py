@@ -236,7 +236,7 @@ def linechart():
     
     ipaddr = getipaddress()
 
-    return render_template('index.html', ipaddr=ipaddr, siteid=siteid, temp_week_ago=temp_week_ago, temp_difference=temp_difference, temp_difference1=temp_difference1, temp_difference2=temp_difference2, temps=airtemps, dates=dates, soiltemps=soiltemps, current_soiltemp=current_soiltemp ,sensor1=sensor1,sensor2=sensor2, current_sensor1=current_sensor1, current_sensor2=current_sensor2, shortdate=shortdate, current_temp=current_temp, temp_week_ago1=temp_week_ago1, temp_week_ago2=temp_week_ago2)
+    return render_template('index.html', ipaddr=ipaddr, cputemps=cputemps, siteid=siteid, temp_week_ago=temp_week_ago, temp_difference=temp_difference, temp_difference1=temp_difference1, temp_difference2=temp_difference2, temps=airtemps, dates=dates, soiltemps=soiltemps, current_soiltemp=current_soiltemp ,sensor1=sensor1,sensor2=sensor2, current_sensor1=current_sensor1, current_sensor2=current_sensor2, shortdate=shortdate, current_temp=current_temp, temp_week_ago1=temp_week_ago1, temp_week_ago2=temp_week_ago2)
 
 
 @app.route('/login', methods=['POST', 'GET'])
@@ -300,9 +300,9 @@ def dashboard():
     dates, airtemps, soiltemps, cputemps, sensor1, sensor2 = get_all(siteid)
 
     if siteid == '1':
-        return render_template('dashboard.html', ipaddr=ipaddr, siteid=siteid, avg=avg, temp_week_ago=temp_week_ago, mycookie=mycookie, temp_difference=temp_difference,temps=airtemps, dates=dates, soiltemps=soiltemps ,sensor1=sensor1, current_sensor1=current_sensor1, current_sensor2=current_sensor2, sensor2=sensor2, current_time=current_time, current_temp=current_temp, current_soiltemp=current_soiltemp, temp_week_ago1=temp_week_ago1, temp_week_ago2=temp_week_ago2 )
+        return render_template('dashboard.html', ipaddr=ipaddr, cputemps=cputemps, siteid=siteid, avg=avg, temp_week_ago=temp_week_ago, mycookie=mycookie, temp_difference=temp_difference,temps=airtemps, dates=dates, soiltemps=soiltemps ,sensor1=sensor1, current_sensor1=current_sensor1, current_sensor2=current_sensor2, sensor2=sensor2, current_time=current_time, current_temp=current_temp, current_soiltemp=current_soiltemp, temp_week_ago1=temp_week_ago1, temp_week_ago2=temp_week_ago2 )
     else:
-        return render_template('dashboard_customer.html', ipaddr=ipaddr, siteid=siteid, avg=avg, temp_week_ago=temp_week_ago, mycookie=mycookie, temp_difference=temp_difference,temps=airtemps, dates=dates, soiltemps=soiltemps ,sensor1=sensor1, current_sensor1=current_sensor1, current_sensor2=current_sensor2, sensor2=sensor2, current_time=current_time, current_temp=current_temp, current_soiltemp=current_soiltemp, temp_week_ago1=temp_week_ago1, temp_week_ago2=temp_week_ago2 )
+        return render_template('dashboard_customer.html', ipaddr=ipaddr, cputemps=cputemps, siteid=siteid, avg=avg, temp_week_ago=temp_week_ago, mycookie=mycookie, temp_difference=temp_difference,temps=airtemps, dates=dates, soiltemps=soiltemps ,sensor1=sensor1, current_sensor1=current_sensor1, current_sensor2=current_sensor2, sensor2=sensor2, current_time=current_time, current_temp=current_temp, current_soiltemp=current_soiltemp, temp_week_ago1=temp_week_ago1, temp_week_ago2=temp_week_ago2 )
 
 @app.route('/logout')
 def delete_cookie():

@@ -22,8 +22,8 @@
   <script src="{{ url_for('static', filename='chartzoom/hammerjs2.0.8') }}"></script>
   <script src="{{ url_for('static', filename='chartzoom/chartjs-plugin-zoom0.7.4') }}"></script>
   <!--end zoom plugin-->
-  <script src="{{ url_for('static', filename='mqttws31.min.js') }}"></script>
-  <script src="{{ url_for('static', filename='demo.js') }}"></script>
+  <!--<script src="{{ url_for('static', filename='mqttws31.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='demo.js') }}"></script>-->
 
   <script>
     $(function () {
@@ -66,7 +66,7 @@
     </li>
   </ul>
   <br>
-  Dashboard cookie is	  {{ mycookie }}
+  <!-- Dashboard cookie is	  {{ mycookie }}-->
 
   <div class="container">
     <div class="row">
@@ -76,7 +76,7 @@
             <tr>
               <td><input hidden class="form-control" id="host" type="text" name="host" value="bintemp.com"></td>
               <td><input hidden class="form-control" id="port" type="text" name="port" value="9001"></td>
-              <td><input class="form-control" id="topic" type="text" name="topic" value="#"><br></td>
+              <td><input hidden class="form-control" id="topic" type="text" name="topic" value="#"><br></td>
             </tr>
             <tr>
               <td><input class="btn btn-success" type="button" onclick="startConnect()" value="Connect"></td>
@@ -135,8 +135,8 @@
           <div class="card-body">
             <h5 class="card-title">Cat House Live</h5>
             <p class="card-text">
-              <h2><i class="fas fa-cat"></i>
-                <div class="text-center" id="sensor2"></div>
+              <h2><i class="fas fa-cat"></i>&nbsp;&nbsp;{{ current_sensor2 }}&deg;</h2>
+                <div class="text-right">Mimi</div>
               </h2>
             </p>
           </div>
@@ -147,7 +147,7 @@
     <hr>
 
 
-    <div class="row">
+<!--    <div class="row">
 
       <div class="col-sm-3">
         <div class="card text-white bg-primary mb-3">
@@ -196,7 +196,7 @@
           </div>
         </div>
       </div>
-    </div>
+      </div>-->
   </div>
 
 
@@ -210,10 +210,10 @@
       var bin_bar = new Chart(ctx, {
         type: 'bar',
         data: {
-          labels: ['Temp', 'Soil Temp', 'Hot Tub', 'Sensor2', 'Sensor3', 'Sensor4'],
+          labels: ['Air Temp', 'Soil Temp', 'Hot Tub', 'Cat House'],
           datasets: [{
             label: 'Temperature',
-            data: [{{ current_temp }}, {{ current_soiltemp }}, {{ current_sensor1 }}, 5, 2, -3],
+		  data: [{{ current_temp }}, {{ current_soiltemp }}, {{ current_sensor1 }}, {{ current_sensor2 }}],
       backgroundColor: [
         'rgba(255, 99, 132, 0.5)',
         'rgba(54, 162, 235, 0.5)',
