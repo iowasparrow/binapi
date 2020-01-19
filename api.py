@@ -275,6 +275,14 @@ def getipaddress():
     ipaddr = re.sub(r"[\n\t\s]*", "", ipaddr)
     return ipaddr
 
+def time_rightnow():
+    fmt = "%Y-%m-%d %H:%M:%S"
+    now_utc = datetime.now(timezone('UTC'))
+    now_central = now_utc.astimezone(timezone('US/Central'))
+    #right_now = now_central.strftime(fmt)
+    return now_central
+
+
 @app.route('/dashboard')
 def dashboard():
     if not request.cookies.get('siteid'):
@@ -294,13 +302,17 @@ def dashboard():
     ipaddr = getipaddress()
 
     current_time, current_temp, temp_difference, temp_week_ago, current_soiltemp, current_sensor1, current_sensor2, temp_week_ago1, temp_week_ago2, temp_difference1, temp_difference2 = get_current_data(siteid)
-    
-    #print("current soiltemp- " + str(current_soiltemp))
+   
+    sensor_timestamp = datetime.strptime(current_time, '%Y-%m-%d %H:%M:%S')
+    delta = datetime.now() - sensor_timestamp
+
+    #print("minutes old " + str(delta.seconds / 60))
+    sensor_age = round((delta.seconds / 60),2)
 
     dates, airtemps, soiltemps, cputemps, sensor1, sensor2 = get_all(siteid)
 
     if siteid == '1':
-        return render_template('dashboard.html', ipaddr=ipaddr, cputemps=cputemps, siteid=siteid, avg=avg, temp_week_ago=temp_week_ago, mycookie=mycookie, temp_difference=temp_difference,temps=airtemps, dates=dates, soiltemps=soiltemps ,sensor1=sensor1, current_sensor1=current_sensor1, current_sensor2=current_sensor2, sensor2=sensor2, current_time=current_time, current_temp=current_temp, current_soiltemp=current_soiltemp, temp_week_ago1=temp_week_ago1, temp_week_ago2=temp_week_ago2 )
+        return render_template('dashboard.html', sensor_age=sensor_age, ipaddr=ipaddr, cputemps=cputemps, siteid=siteid, avg=avg, temp_week_ago=temp_week_ago, mycookie=mycookie, temp_difference=temp_difference,temps=airtemps, dates=dates, soiltemps=soiltemps ,sensor1=sensor1, current_sensor1=current_sensor1, current_sensor2=current_sensor2, sensor2=sensor2, current_time=current_time, current_temp=current_temp, current_soiltemp=current_soiltemp, temp_week_ago1=temp_week_ago1, temp_week_ago2=temp_week_ago2 )
     else:
         return render_template('dashboard_customer.html', ipaddr=ipaddr, cputemps=cputemps, siteid=siteid, avg=avg, temp_week_ago=temp_week_ago, mycookie=mycookie, temp_difference=temp_difference,temps=airtemps, dates=dates, soiltemps=soiltemps ,sensor1=sensor1, current_sensor1=current_sensor1, current_sensor2=current_sensor2, sensor2=sensor2, current_time=current_time, current_temp=current_temp, current_soiltemp=current_soiltemp, temp_week_ago1=temp_week_ago1, temp_week_ago2=temp_week_ago2 )
 
@@ -327,8 +339,7 @@ def get_json_data():
         'siteid'  : request.json['siteid'],
         'soiltemp': request.json['soiltemp'],
         'sensor1' : request.json['sensor1'],
-        'sensor2' : request.json['sensor2'],
-        'picpu'   : request.json['picpu']
+        'sensor2' : request.json['sensor2']
     }
     
     airtemp = request.json.get('airtemp')
@@ -336,15 +347,14 @@ def get_json_data():
     soiltemp = request.json.get('soiltemp')
     sensor1 = request.json.get('sensor1')
     sensor2 = request.json.get('sensor2')
-    picpu = request.json.get('picpu')
 #    print("in api function going to call the log to database function")
-    log_to_database(airtemp, siteid, soiltemp, sensor1, sensor2, picpu)
+    log_to_database(airtemp, siteid, soiltemp, sensor1, sensor2)
 #    print("in api function, end of api insert function, returning data array:")
     print(data)
     return jsonify({'data': data}), 201
 
 
-def log_to_database(airtemp, siteid, soiltemp, sensor1,sensor2, picpu):
+def log_to_database(airtemp, siteid, soiltemp, sensor1,sensor2):
 #    print("starting log to database function")
     fmt = "%Y-%m-%d %H:%M:%S"
     now_utc = datetime.now(timezone('UTC'))
@@ -354,7 +364,7 @@ def log_to_database(airtemp, siteid, soiltemp, sensor1,sensor2, picpu):
 #    print("opening database")
     conn = sqlite3.connect(database)
     curs = conn.cursor()
-    curs.execute("INSERT INTO pihq VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)", (formatted_date, None, airtemp, siteid, soiltemp, None, picpu, sensor1, sensor2, None, None, None ,None ))
+    curs.execute("INSERT INTO pihq VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)", (formatted_date, None, airtemp, siteid, soiltemp, None, None, sensor1, sensor2, None, None, None ,None ))
     conn.commit()
 #    print("committed changes")
     conn.close()

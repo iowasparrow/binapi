@@ -14,7 +14,7 @@
 
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='jquery-ui.css') }}">
     <script src="{{ url_for('static', filename='jquery-ui.js') }}"></script>
-    
+    <meta http-equiv="refresh" content="3600">    
     <script>
   $( function() {
 	  $( "#aStartDate" ).datepicker({
@@ -81,7 +81,6 @@
 
 	    <div class="col">
 		Last Sample Time= {{ shortdate }}<br>
-		Showing Data From {{ start_date }} to somedate
 	    <br>
 	    </div>
 
@@ -116,7 +115,7 @@ var myChart = new Chart(ctx, {
 
         datasets: [
         {
-            label: 'Temp Sensor',
+            label: 'Air Temp',
             fill: false,
             data: [{% for temp in temps %}{{ temp }},{% endfor %}],
     	    backgroundColor: 'green',

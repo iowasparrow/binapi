@@ -22,7 +22,7 @@
   <script src="{{ url_for('static', filename='chartzoom/hammerjs2.0.8') }}"></script>
   <script src="{{ url_for('static', filename='chartzoom/chartjs-plugin-zoom0.7.4') }}"></script>
   <!--end zoom plugin-->
-
+  <meta http-equiv="refresh" content="3600">
   <script>
     $(function () {
       $("#header").load("http://bintemp.com/nav.html");
@@ -59,6 +59,7 @@
   <br>
   <!-- Dashboard cookie is	  {{ mycookie }}-->
 
+  <div class="text-center">Minutes old:  {{ sensor_age }}</div>
 
   <div class="container">
     <div class="row">
